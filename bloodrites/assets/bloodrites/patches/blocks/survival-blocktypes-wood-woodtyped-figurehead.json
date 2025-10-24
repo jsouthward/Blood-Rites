@@ -1,0 +1,11 @@
+[
+  {
+    "op": "addmerge",
+    "path": "/attributes/materials/states",
+    "value": [
+      "populusalba"
+    ],
+    "file": "game:blocktypes/wood/woodtyped/figurehead.json",
+    "side": "Server"
+  }
+]

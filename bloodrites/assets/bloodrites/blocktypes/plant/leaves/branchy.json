@@ -1,0 +1,163 @@
+{
+	"code": "leavesbranchy",
+	"__comment": "BlockLeaves contains some code for map color tinting, stuff for wind affectedness and random testForDecay server block ticks",
+	"class": "BlockLeaves",
+	"behaviorsByType": {
+		"*-grown*-*": [{"name": "PushEventOnBlockBroken",	"properties": {"eventname": "testForDecay"}}, { "name": "RainDrip" }],
+		"*": [{ "name": "RainDrip" }]
+	},
+	"attributes": {
+		"fenceConnect": { "north": false, "east": false, "west": false, "south": false },
+		"asphyxiating": false,
+		"handbook": {
+			"groupBy": ["leavesbranchy-*"]
+		},
+		"treeFellingGroupCodeByType": {
+      "*-grown-leavesbranchybloodroot": "0oak",
+      "*-grown1-leavesbranchybloodroot": "1oak",
+      "*-grown2-leavesbranchybloodroot": "2oak",
+      "*-grown3-leavesbranchybloodroot": "3oak",
+      "*-grown4-leavesbranchybloodroot": "4oak",
+      "*-grown5-leavesbranchybloodroot": "5oak",
+      "*-grown6-leavesbranchybloodroot": "6oak",
+      "*-grown7-leavesbranchybloodroot": "7oak",
+			"*-grown-*": "0{wood}",
+			"*-grown1-*": "1{wood}",
+			"*-grown2-*": "2{wood}",
+			"*-grown3-*": "3{wood}",
+			"*-grown4-*": "4{wood}",
+			"*-grown5-*": "5{wood}",
+			"*-grown6-*": "6{wood}",
+			"*-grown7-*": "7{wood}",
+
+			"*-placed-*": "3{wood}"
+		},
+		"treeFellingGroupSpreadIndex": 1,
+		"canDecayByType": {
+			"*-grown*-*": true
+		},
+		"liquidBarrierOnSides": [ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ]
+	},
+	"variantgroups": [
+		{ "code": "type", "states": ["grown", "grown1", "grown2", "grown3", "grown4", "grown5", "grown6", "grown7", "placed"] },
+		{ "code": "wood", "states": ["leavesbranchybloodroot"], "loadFromProperties": "bloodrites:block/wood" }
+	],
+	"creativeinventory": { "general": ["leavesbranchy-placed-bloodroot"], "flora": ["leavesbranchy-placed-bloodroot"] },
+	
+	"shape": {
+		"baseByType": {
+			"*-bloodroot": "game:block/plant/leaves/branchy-crimsonkingmaple",
+			"*": "game:block/plant/leaves/branchy-crimsonkingmaple"
+		},
+		"rotatey": 10,
+		"alternates": [
+			{ "rotatey": 61 },
+			{ "rotatey": 113 },
+			{ "rotatey": 164 },
+			{ "rotatey": 216 },
+			{ "rotatey": 267 },
+			{ "rotatey": 319 }
+		]
+	},
+	"lod0shape": {
+		"baseByType": {
+			"*-bloodroot": "game:block/plant/leaves/branchy-crimsonkingmaple-lod0",
+			"*": "game:block/plant/leaves/branchy-crimsonkingmaple-lod0"
+		},
+		"rotatey": 10,
+		"alternates": [
+			{ "rotatey": 61 },
+			{ "rotatey": 113 },
+			{ "rotatey": 164 },
+			{ "rotatey": 216 },
+			{ "rotatey": 267 },
+			{ "rotatey": 319 }
+		]
+	},
+	"shapeInventory": {
+		"baseByType": {
+			"*-bloodroot": "game:block/plant/leaves/branchy-crimsonkingmaple-lod0",
+			"*": "game:block/plant/leaves/branchy-lod0"
+		}
+	},
+	"renderPass": "OpaqueNoCull",
+	"faceCullMode": "CollapseMaterial",
+	"blockmaterial": "Leaves",
+    //"climateColorMapByType": {"*": "null",},
+	"vertexFlags": {
+		"zOffset": 4,
+		"windMode": "Leaves"
+	},
+	"textures": {
+		"largeleavesBytype": {	
+			"*-bloodroot": { "base": "bloodrites:block/plant/leaves/large/bloodroot*" }
+		},
+		"smallleavesBytype": {
+			"*-bloodroot": { "base": "bloodrites:block/plant/leaves/small/bloodroot*" },
+		},
+		"branch": { "base": "game:block/plant/leaves/large/branch" }
+	},
+	"sideopaque": {
+		"all": false
+	},
+	"sideAo": {
+		"all": true
+	},
+	"emitSideAo": {
+		"all": false
+	},
+	"replaceable": 3000,
+	"lightAbsorption": 1,
+	"resistance": 0.9,
+	"snowCoverage": true,
+	"dropsByType": {
+		"*-bloodroot": [
+        {
+            "type": "item",
+            "code": "bloodrites:treeseed-bloodroot",
+            "quantityByType": {
+                "*": { "avg": 0.05, "var": 0 }
+            }
+        },
+        {
+            "type": "item",
+            "code": "game:stick",
+            "quantity": { "avg": 1, "var": 0 }
+        }
+		],
+		"*": [        {
+            "type": "item",
+            "code": "bloodrites:treeseed-bloodroot",
+            "quantityByType": {
+                "*": { "avg": 0.05, "var": 0 }
+            }
+        },
+        {
+            "type": "item",
+            "code": "game:stick",
+            "quantity": { "avg": 1, "var": 0 }
+        },]
+	},
+	"sounds": {
+		"break": "game:block/plant",
+		"place": "game:block/plant",
+		"hit": "game:block/plant",
+		"walk": "game:walk/grass",
+  	"inside": "game:walk/inside/leafy/bushrustle*"
+	},
+	"combustibleProps": {
+		"burnTemperature": 600,
+		"burnDuration": 10
+	},
+	"materialDensity": 400,
+	"heldTpIdleAnimation": "holdbothhandslarge", "heldTpUseAnimation": "twohandplaceblock",
+	"tpHandTransform": {
+		"translation": { "x": -1.23, "y": -0.91, "z": -0.8 },
+		"rotation": { "x": -2, "y": 25, "z": -78 },
+		"scale": 0.4
+	},
+	"guiTransform": {
+		"scale": 0.8
+	},
+	"frostable": true
+}

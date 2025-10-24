@@ -1,0 +1,9 @@
+{
+	"Code": "wood",
+	"variants":[
+		{
+			"Code": "bloodroot",
+			"treeType": "Deciduous"
+		},
+	]
+}

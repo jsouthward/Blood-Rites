@@ -1,0 +1,8 @@
+[
+  {
+    "code": "bloodcongealed",
+    "sealHours": 10,
+    "ingredients": [ { "type": "item", "code": "bloodrites:bloodportion", "litres":4 } ],
+    "output": { "type": "item", "code": "bloodrites:congealedblood", "stackSize": 1 }
+  },
+]

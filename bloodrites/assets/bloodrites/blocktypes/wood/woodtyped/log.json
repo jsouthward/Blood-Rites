@@ -1,0 +1,103 @@
+{
+	"code": "log",
+	"__comment": "BlockLog contains only contains code for OnPickBlock",
+	"classByType": {
+           "*": "BlockLog"
+        },
+	"behaviorsByType": {
+		"*-grown-*": [{"name": "PushEventOnBlockBroken",	"properties": {"eventname": "testForDecay"}}, { "name": "MyceliumHost" }],
+		"*": [{"name": "Pillar"}, { "name": "MyceliumHost" }, { "name": "WrenchOrientable", "properties": { "basecode": "game:log-placed-{wood}" } }]
+	},
+	"variantgroups": [
+		{ "code": "type", "states": ["grown", "placed"] },
+		{ "code": "wood", "loadFromProperties": "bloodrites:block/wood" },
+		{ "code": "rotation", "states": ["ud", "ns", "we"] }
+	],
+	"creativeinventory": { "general": ["log-placed-*-ud"], "flora": ["log-placed-*-ud"], "bloodrites": ["log-placed-*-ud"], "construction": ["log-placed-*-ud"] },
+	"shape": { "base": "game:block/basic/cube" },
+	"drawtype": "cube",
+	"blockmaterial": "Wood",
+	"requiredMiningTier": 1,
+	"attributes": {
+		"handbook": {
+			"groupBy": ["log-*-{wood}-*"]
+		},
+		"treeFellingGroupCodeByType": {
+			"log-grown-*": "{wood}"
+		},
+		"treeFellingGroupSpreadIndexByType": {
+		"log-grown-*": 4
+		},
+		"preventsDecayByType": {
+			"bloodrites:log-grown-*": true
+		}
+	},
+	"texturesByType": {
+		"*-ud": {
+			"all": { "base": "bloodrites:block/wood/bark/{wood}" },
+			"inside-north": { "base": "game:block/wood/debarked/{wood}", "rotation": 90 },
+			"inside-east": { "base": "game:block/wood/debarked/{wood}", "rotation": 90 },
+			"inside-south": { "base": "game:block/wood/debarked/{wood}", "rotation": 90 },
+			"inside-west": { "base": "game:block/wood/debarked/{wood}", "rotation": 90 },
+
+			"up": { "base": "bloodrites:block/wood/treetrunk/{wood}" },
+			"down": { "base": "bloodrites:block/wood/treetrunk/{wood}" }
+		},
+		"*-ns": {
+			"all": { "base": "bloodrites:block/wood/bark/{wood}-h" },
+			"up": { "base": "bloodrites:block/wood/bark/{wood}" },
+			"down": { "base": "bloodrites:block/wood/bark/{wood}" },
+
+
+			"inside-up": { "base": "game:block/wood/debarked/{wood}", "rotation": 90 },
+			"inside-down": { "base": "game:block/wood/debarked/{wood}", "rotation": 90 },
+			"inside-west": { "base": "game:block/wood/debarked/{wood}" },
+			"inside-east": { "base": "game:block/wood/debarked/{wood}" },
+
+
+			"north": { "base": "bloodrites:block/wood/treetrunk/{wood}" },
+			"south": { "base": "bloodrites:block/wood/treetrunk/{wood}" }
+		},
+		"*-we": {
+			"all": { "base": "bloodrites:block/wood/bark/{wood}-h" },
+			"up": { "base": "bloodrites:block/wood/bark/{wood}-h" },
+
+			"inside-up": { "base": "game:block/wood/debarked/{wood}" },
+			"inside-down": { "base": "game:block/wood/debarked/{wood}" },
+			"inside-north": { "base": "game:block/wood/debarked/{wood}" },
+			"inside-south": { "base": "game:block/wood/debarked/{wood}" },
+
+
+			"west": { "base": "bloodrites:block/wood/treetrunk/{wood}" },
+			"east": { "base": "bloodrites:block/wood/treetrunk/{wood}" }
+		},
+	},
+	"replaceable": 500,
+	"resistance": 4.5,
+	"sounds": {
+		"place": "game:block/planks",
+		"walk": "game:walk/wood",
+		"hit": "game:block/planks",
+		"break": "game:block/planks",
+		"byTool": {
+			"Axe": { "hit": "game:block/chop", "break": "game:block/planks" }
+		}
+	},
+	"drops": [
+		{ "type": "block", "code": "bloodrites:log-placed-{wood}-ud", "quantity": { "avg": 1 }  }
+	],
+	"combustiblePropsByType": {
+		"*": {
+			"burnTemperature": 800,
+			"burnDuration": 72
+		}
+	},
+	"maxstacksize": 16,
+	"materialDensity": 700,
+	"heldTpIdleAnimation": "holdbothhandslarge", "heldTpUseAnimation": "twohandplaceblock",
+	"tpHandTransform": {
+		"translation": { "x": -1.23, "y": -0.91, "z": -0.8 },
+		"rotation": { "x": -2, "y": 25, "z": -78 },
+		"scale": 0.4
+	}
+}

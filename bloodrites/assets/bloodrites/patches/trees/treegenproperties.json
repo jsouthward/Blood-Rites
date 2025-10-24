@@ -1,0 +1,26 @@
+[
+		
+		{
+			"op": "add",
+			"path": "/treegens/-",
+			"value": {
+				"Generator": "bloodroot",              // Your custom tree generator
+                "MinSize": 0.6,                        // Always fairly large (80% of base)
+                "MaxSize": 1.4,                        // Occasionally huge “ancient” versions
+                "Weight": 0.1,                           // Moderately rare compared to oaks/pines
+                "SuitabilitySizeBonus": 0.9,           // Grows bigger in perfect conditions
+                "MinTemp": 6,                          // Prefers mild climates (no snow)
+                "MaxTemp": 20,                         // Stops before tropical heat
+                "MinRain": 200,                         // Needs moderate rainfall
+                "MaxRain": 220,                        // Thrives in humid forests
+                "MinFert": 100,                        // Likes fertile ground
+                "MaxFert": 255,
+                "MinForest": 50,                       // Avoids bare plains
+                "MaxForest": 100,                      // Common in deep forests
+                "MinHeight": 0.05,                     // Avoid beaches or marsh edges
+                "MaxHeight": 0.7                       // Stops before high mountain slopes
+			},
+			"file": "game:worldgen/treengenproperties.json",
+			"side": "server",
+		},
+]

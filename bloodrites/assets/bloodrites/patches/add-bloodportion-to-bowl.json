@@ -1,0 +1,16 @@
+[
+  {
+    "file": "game:blocktypes/clay/fired/bowl",
+    "op": "add",
+    "path": "/creativeinventoryStacksByType/bowl-blue-fired/0/stacks/-",
+    "value": {
+      "type": "block",
+      "code": "bowl-blue-fired",
+      "attributes": {
+        "ucontents": [
+          { "type": "item", "code": "bloodrites:bloodportion", "makefull": true }
+        ]
+      }
+    }
+  }
+]

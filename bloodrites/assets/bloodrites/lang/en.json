@@ -1,0 +1,20 @@
+{
+	"item-simplewand": "(Example Mod) Simple Wand",
+	
+    "game:tabname-bloodrites": "Blood Rites",
+    "item-veinboundtome": "The Veinbound Tome",
+    "itemdesc-veinboundtome": "A living codex of blood alchemy.",
+    "incontainer-item-bloodportion": "Blood",
+    "item-bloodportion": "Blood",
+    // Clay Tablets
+    "item-clayplate-blue-fired": "Clay tablet",
+    "itemdesc-clayplate-blue-fired": "<i>A smooth, fired clay slab awaiting inscription. Heavy with potential and faintly warm to the touch.<i><br> Used at an Altar or Inscription Table to imprint the sigils of blood rites.",
+    "item-clayplate-red-raw": "Raw red clay tablet",
+    "item-clayplate-fire-raw": "Raw fire clay tablet",
+    //Bloodroot Tree
+    "block-log-placed-bloodroot-ud": "Bloodroot log",
+    "blockdesc-log-placed-bloodroot-ud": "Its roots drink deeper than water — they find the pulse beneath the earth. — Veinbound Tome, Fragment XXXI",
+    "block-debarkedlog-bloodroot-*": "Debarked bloodroot log",
+    
+    
+}
