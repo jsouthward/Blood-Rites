@@ -11,14 +11,14 @@
             "groupBy": ["leaves-*"]
         },
         "treeFellingGroupCodeByType": {
-            "*-grown-leavesbloodroot": "0oak",
-            "*-grown1-leavesbloodroot": "1oak",
-            "*-grown2-leavesbloodroot": "2oak",
-            "*-grown3-leavesbloodroot": "3oak",
-            "*-grown4-leavesbloodroot": "4oak",
-            "*-grown5-leavesbloodroot": "5oak",
-            "*-grown6-leavesbloodroot": "6oak",
-            "*-grown7-leavesbloodroot": "7oak",
+            "*-grown-leavesbloodroot": "0maple",
+            "*-grown1-leavesbloodroot": "1maple",
+            "*-grown2-leavesbloodroot": "2maple",
+            "*-grown3-leavesbloodroot": "3maple",
+            "*-grown4-leavesbloodroot": "4maple",
+            "*-grown5-leavesbloodroot": "5maple",
+            "*-grown6-leavesbloodroot": "6maple",
+            "*-grown7-leavesbloodroot": "7maple",
             "*-grown-*": "0{wood}",
             "*-grown1-*": "1{wood}",
             "*-grown2-*": "2{wood}",
@@ -30,7 +30,7 @@
 
 	    "*-placed-*": "3{wood}"
         },
-        "treeFellingGroupSpreadIndex": 0,
+        "treeFellingGroupSpreadIndex": 1,
         "canDecayByType": {
             "*-grown*-*": true
         }
