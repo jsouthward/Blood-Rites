@@ -1,0 +1,118 @@
+﻿{
+  "code": "chest",
+  "class": "BlockGenericTypedContainer",
+  "entityclass": "GenericTypedContainer",
+  "attributes": {
+    "humanoidTraversalCost": 100,
+    "reinforcable": true,
+    "partialAttachable": true,
+    "inventoryClassName": "chest",
+    "defaultType": "brnormal-generic",
+    "types": [
+      "brnormal-generic"
+    ],
+    "rotatatableInterval": {
+      "brnormal-generic": "22.5degnot45deg"
+    },
+    "drop": {
+      "brnormal-generic": true
+    },
+    "quantitySlots": {
+      "brnormal-generic": 24
+    },
+    "dialogTitleLangCode": {
+      "brnormal-generic": "chestcontents"
+    },
+    "storageType": {
+      "brnormal-generic": 189
+    },
+    "retrieveOnly": {
+      "brnormal-generic": false
+    },
+    "shape": {
+      "brnormal-generic": "bloodrites:block/wood/brchest/brchest"
+    },
+    "typedOpenSound": {
+      "brnormal-generic": "game:sounds/block/largechestopen"
+    },
+    "typedCloseSound": {
+      "brnormal-generic": "game:sounds/block/largechestclose"
+    },
+    "variantByGroup": "side",
+    "variantByGroupInventory": null
+  },
+  "behaviors": [
+    {"name": "Lockable"},
+    {"name": "Container"},
+    {"name": "BoatableGenericTypedContainer"}
+  ],
+  "entityBehaviors": [{"name": "Animatable"}],
+  "variantgroups": [
+    {"code": "side", "loadFromProperties": "game:abstract/horizontalorientation"}
+  ],
+  "creativeinventory": {},
+  "creativeinventoryStacksByType": {
+    "*-east": [
+      {
+        "tabs": ["general", "decorative"],
+        "stacks": [
+          {
+            "type": "block",
+            "code": "chest-east",
+            "attributes": {"type": "brnormal-generic"}
+          },
+        ]
+      },
+    ]
+  },
+  "heldTpIdleAnimation": "holdunderarm",
+  "shapeInventory": {"base": "bloodrites:block/wood/brchest/brchest", "rotateY": 270},
+  "shapeByType": {
+    "*-north": {"base": "bloodrites:block/wood/brchest/brchest", "rotateY": 0},
+    "*-east": {"base": "bloodrites:block/wood/brchest/brchest", "rotateY": 270},
+    "*-west": {"base": "bloodrites:block/wood/brchest/brchest", "rotateY": 90},
+    "*-south": {"base": "bloodrites:block/wood/brchest/brchest", "rotateY": 180}
+  },
+  "textures": {
+    "brnormal-generic-sides2": {"base": "bloodrites:block/wood/brchest/sides"},
+    "brnormal-generic-lid": {"base": "bloodrites:block/wood/brchest/lid"},
+    "brnormal-generic-accessories": {"base": "bloodrites:block/wood/brchest/accessories"},
+  },
+  "blockmaterial": "Wood",
+  "replaceable": 900,
+  "resistance": 3,
+  "lightAbsorption": 0,
+  "sideAo": {"all": false},
+  "sidesolid": {"all": false},
+  "sideopaque": {"all": false},
+  "collisionbox": {
+    "x1": 0.0625,
+    "y1": 0,
+    "z1": 0.0625,
+    "x2": 0.9375,
+    "y2": 0.8125,
+    "z2": 0.9375
+  },
+  "selectionbox": {
+    "x1": 0.0625,
+    "y1": 0,
+    "z1": 0.0625,
+    "x2": 0.9375,
+    "y2": 0.8125,
+    "z2": 0.9375
+  },
+  "combustibleProps": {"burnTemperature": 600, "burnDuration": 35},
+  "sounds": {
+    "place": "game:block/planks",
+    "hit": "game:block/planks",
+    "break": "game:block/planks",
+    "walk": "game:walk/wood"
+  },
+  "materialDensity": 600,
+  "tpHandTransform": {
+    "translation": {"x": -0.9, "y": -0.5, "z": -0.3},
+    "rotation": {"x": 0, "y": 90, "z": -102},
+    "scale": 0.56
+  },
+  "guiTransform": {"origin": {"x": 0.5, "y": 0.4, "z": 0.5}, "scale": 1.16}
+}
