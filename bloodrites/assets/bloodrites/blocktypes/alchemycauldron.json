@@ -1,0 +1,88 @@
+﻿{
+  "code": "alchemycauldron",
+  "class": "BlockAlchemyCauldron",
+    "behaviors": [
+    {
+      "name": "GroundStorable",
+      "properties": {
+        "layout": "Quadrants",
+        "collisionBox": {
+          "x1": 0,
+          "y1": 0,
+          "z1": 0,
+          "x2": 1,
+          "y2": 0.125,
+          "z2": 1
+        }
+      }
+    },
+    {"name": "Unplaceable"}
+  ],
+  "shape": { "base": "bloodrites:block/cauldron" },
+
+  "textures": {
+		"transparent": { "base": "game:block/transparent" },
+		"ceramic": { "base": "game:block/clay/pot/blue" }
+	},
+  
+  "doNotRenderAtLod2": true,
+  "blockmaterial": "Ceramic",
+  "creativeinventory": { "general": ["*"] },
+
+  "attributes": {
+    "isCookVessel": true,
+    "guiTitle": "Alchemy Cauldron",
+    "inFirePitProps": {
+      "transform": {"translation": {"x": 0, "y": 0.125, "z": 0}},
+      "useFirepitModel": "Wide"
+    },
+  },
+
+  "blockentity": {
+    "class": "BlockEntityAlchemyCauldron"
+  },
+
+  "combustibleProps": {
+    "burnTemperature": 600,
+    "burnDuration": 10
+  },
+
+  "sounds": {
+    "place": "game:block/metal",
+    "break": "game:block/metal",
+    "hit": "game:block/metal",
+    "walk": "game:walk/stone"
+  },
+  "lightAbsorption": 0,
+  "sideopaque": {"all": false},
+  "sidesolid": {"all": false},
+  "collisionbox": {
+    "x1": 0.28,
+    "y1": 0,
+    "z1": 0.28,
+    "x2": 0.72,
+    "y2": 0.3125,
+    "z2": 0.72
+  },
+  "selectionbox": {
+    "x1": 0.28,
+    "y1": 0,
+    "z1": 0.28,
+    "x2": 0.72,
+    "y2": 0.3125,
+    "z2": 0.72
+  },
+  "guiTransform": {"origin": {"x": 0.5, "y": 0.2, "z": 0.5}, "scale": 2},
+  "groundTransform": {"scale": 3},
+  "fpHandTransform": {"translation": {"x": 0, "y": 0.1, "z": 0.5}, "scale": 2},
+  "tpHandTransform": {
+    "translation": {"x": -0.6799, "y": 0.06, "z": -0.37},
+    "rotation": {"x": -82, "y": 19, "z": -103},
+    "origin": {"x": 0.5, "y": 0, "z": 0.5},
+    "scale": 0.76
+  },
+
+  "drops": [
+    { "type": "block", "code": "bloodrites:alchemycauldron" }
+  ]
+}

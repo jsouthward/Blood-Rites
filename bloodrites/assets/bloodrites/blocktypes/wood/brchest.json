@@ -76,6 +76,7 @@
   "textures": {
     "brnormal-generic-sides2": {"base": "bloodrites:block/wood/brchest/sides"},
     "brnormal-generic-lid": {"base": "bloodrites:block/wood/brchest/lid"},
+    "brnormal-generic-lidtop": {"base": "bloodrites:block/wood/brchest/lidtop"},
     "brnormal-generic-accessories": {"base": "bloodrites:block/wood/brchest/accessories"},
   },
   "blockmaterial": "Wood",
