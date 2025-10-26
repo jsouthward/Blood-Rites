@@ -20,14 +20,10 @@ namespace bloodrites
 
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
-            // Open custom GUI later — for now, use normal cookpot GUI
+            // (optional custom GUI later)
             return base.OnBlockInteractStart(world, byPlayer, blockSel);
         }
-        // This is the key bit: tell the firepit how to render us
-        public IInFirepitRenderer GetInFirepitRenderer(ICoreClientAPI capi, ItemStack stack, BlockPos pos, bool isInOutputSlot)
-        {
-            return new CauldronInFirepitRenderer(capi, stack, pos, isInOutputSlot);
-        }
+
     }
 }
 

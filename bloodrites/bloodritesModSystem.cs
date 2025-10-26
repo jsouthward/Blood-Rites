@@ -20,7 +20,6 @@ namespace bloodrites
         {
             Mod.Logger.Notification("Hello from template mod: " + api.Side);
             api.RegisterBlockClass("BlockAlchemyCauldron", typeof(BlockAlchemyCauldron));
-            api.RegisterBlockEntityClass("BlockEntityAlchemyCauldron", typeof(BlockEntityAlchemyCauldron));
         }
 
         public override void StartServerSide(ICoreServerAPI api)

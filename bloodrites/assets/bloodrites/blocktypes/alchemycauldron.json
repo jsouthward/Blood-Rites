@@ -1,6 +1,6 @@
 ﻿{
   "code": "alchemycauldron",
-  "class": "BlockAlchemyCauldron",
+  "class": "BlockCookedCauldron",
     "behaviors": [
     {
       "name": "GroundStorable",
@@ -31,11 +31,13 @@
 
   "attributes": {
     "isCookVessel": true,
+    "inFirepitRenderer": true,
 
     "inFirePitProps": {
       "transform": { "translation": { "x": 0, "y": 0.12, "z": 0 } },
       "attachShape": { "base": "bloodrites:block/cauldron" },
-      "attachScale": 1.0
+      "attachScale": 1.0,
+      "useFirepitModel": "Wide"
     },
 
     "firepitContainerProps": {
