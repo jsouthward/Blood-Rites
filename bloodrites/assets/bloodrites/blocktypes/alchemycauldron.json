@@ -31,21 +31,21 @@
 
   "attributes": {
     "isCookVessel": true,
-    "guiTitle": "Alchemy Cauldron",
+
     "inFirePitProps": {
-      "transform": {"translation": {"x": 0, "y": 0.125, "z": 0}},
-      "useFirepitModel": "Wide"
+      "transform": { "translation": { "x": 0, "y": 0.12, "z": 0 } },
+      "attachShape": { "base": "bloodrites:block/cauldron" },
+      "attachScale": 1.0
     },
+
+    "firepitContainerProps": {
+      "attachShape": { "base": "bloodrites:block/cauldron" },
+      "attachOffset": { "x": 0, "y": 0.12, "z": 0 },
+      "attachScale": 1.0
+    }
   },
 
-  "blockentity": {
-    "class": "BlockEntityAlchemyCauldron"
-  },
-
-  "combustibleProps": {
-    "burnTemperature": 600,
-    "burnDuration": 10
-  },
+  "blockentity": { "class": "BlockEntityAlchemyCauldron" },
 
   "sounds": {
     "place": "game:block/metal",
