@@ -11,19 +11,17 @@ using Vintagestory.GameContent;
 
 namespace bloodrites
 {
-    public class BlockAlchemyCauldron : BlockCookedContainer
+    public class BlockAlchemyCauldron : BlockCookedCauldron
     {
         public override string GetPlacedBlockName(IWorldAccessor world, BlockPos pos)
         {
-            return Lang.Get("Alchemy Cauldron");
+            return "Alchemy Cauldron";
         }
 
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
         {
-            // (optional custom GUI later)
+            // Let the firepit handle it (this triggers the firepit GUI)
             return base.OnBlockInteractStart(world, byPlayer, blockSel);
         }
-
     }
 }
-

@@ -11,35 +11,33 @@ using Vintagestory.GameContent;
 
 namespace bloodrites
 {
-    // Minimal working BlockEntity for 1.21.x
     public class BlockEntityAlchemyCauldron : BlockEntity
     {
-        public InventoryGeneric? Inventory { get; private set; }
+        public InventoryGeneric Inventory { get; private set; }
 
         public override void Initialize(ICoreAPI api)
         {
             base.Initialize(api);
+
+            // Create a simple 5-slot container for the cauldron
             Inventory ??= new InventoryGeneric(5, "alchemycauldron-" + Pos, api);
         }
 
-        public bool OnInteract(IPlayer player)
+        public InventoryBase GetInventory()
         {
-            if (Api == null) return false;
-            if (Api.Side == EnumAppSide.Client) return true;
+            return Inventory;
+        }
 
-            player.InventoryManager.OpenInventory(Inventory);
+        public bool CanCook(IWorldAccessor world)
+        {
+            // For now, allow all cooking attempts
             return true;
         }
 
-        // Example hook for recipe processing later
-        public void CompleteAlchemy(AlchemyRecipeSystem sys)
+        public void OnCookingComplete()
         {
-            var recipe = sys.FindMatchingRecipe(Inventory!);
-            if (recipe == null) return;
-
-            Inventory[4].Itemstack = recipe.Output.Clone();
-            MarkDirty(true);
-            Inventory?.MarkSlotDirty(0);
+            // Placeholder: add your alchemy logic here later
+            Api.Logger.Notification("Alchemy Cauldron finished cooking!");
         }
     }
 }

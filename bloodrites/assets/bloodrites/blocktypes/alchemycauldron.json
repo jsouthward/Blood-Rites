@@ -32,6 +32,7 @@
   "attributes": {
     "isCookVessel": true,
     "inFirepitRenderer": true,
+    "capacity": 5,
 
     "inFirePitProps": {
       "transform": { "translation": { "x": 0, "y": 0.12, "z": 0 } },

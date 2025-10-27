@@ -1,35 +1,37 @@
-﻿/*using Vintagestory.API.Server;
-using System;
-using System.Collections.Generic;
-using Vintagestory.API.Client;
+﻿using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
-using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Util;
 using Vintagestory.GameContent;
+using System;
 
 namespace bloodrites
 {
     public class GuiAlchemyCauldron : GuiDialogBlockEntity
     {
-        /public GuiAlchemyCauldron(string title, InventoryBase inv, BlockPos pos, ICoreClientAPI capi)
-            : base(title, inv, pos, capi)
+        public GuiAlchemyCauldron(InventoryBase inventory, BlockPos pos, ICoreClientAPI capi)
+            : base("Alchemy Cauldron", inventory, pos, capi)
         {
             SetupDialog();
         }
 
-        void SetupDialog()
+        private void SetupDialog()
         {
+            ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog
+                .WithAlignment(EnumDialogArea.CenterMiddle);
+
             ElementBounds bg = ElementBounds.Fill.WithFixedPadding(10);
             bg.BothSizing = ElementSizing.FitToChildren;
 
-            SingleComposer = capi.Gui.CreateCompo("alchemycauldron", bg)
-                .AddDialogTitleBar("Alchemy Cauldron", OnTitleBarClose)
-                .AddItemSlotGrid(Inventory, true, 3, 2, 20, 40)
-                .AddDynamicText("Brewing...", CairoFont.WhiteSmallText(), EnumTextOrientation.Center, 0, 110)
-                .AddAutoSizeDialog()
-                .Compose();
+            ElementBounds titleBounds = ElementBounds.Fixed(0, 0, 220, 20);
+            ElementBounds closeBtnBounds = ElementBounds.Fixed(230, 0, 20, 20);
+            ElementBounds slotBounds = ElementStdBounds.SlotGrid(EnumDialogArea.None, 0, 30, 5, 1);
+            ElementBounds statusBounds = ElementBounds.Fixed(0, 90, 220, 20);
+        }
+
+        private bool OnCloseClicked()
+        {
+            TryClose();
+            return true;
         }
     }
-}*/
+}
