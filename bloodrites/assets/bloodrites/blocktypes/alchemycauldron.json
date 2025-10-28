@@ -1,6 +1,6 @@
 ﻿{
   "code": "alchemycauldron",
-  "class": "BlockCookedCauldron",
+  "class": "BlockCookingCauldron",
     "behaviors": [
     {
       "name": "GroundStorable",
@@ -30,12 +30,18 @@
   "creativeinventory": { "general": ["*"] },
 
   "attributes": {
-    "isCookVessel": true,
-    "inFirepitRenderer": true,
-    "capacity": 5,
+    //"tempGlowMode": 1,
+	//"shelvable": true,
+    //"isCookVessel": true,
+    //"inFirepitRenderer": true,
+    ///"cookingContainerSlots": 4,
+	//"maxContainerSlotStackSize": 4,
+    //"servingCapacity": 6,
+	//"storageType": 1,
+	//"maxTemperature": 200,
 
-    "inFirePitProps": {
-      "transform": { "translation": { "x": 0, "y": 0.12, "z": 0 } },
+    /*"inFirePitProps": {
+      "transform": { "translation": { "x": 0, "y": 0.1, "z": 0 } },
       "attachShape": { "base": "bloodrites:block/cauldron" },
       "attachScale": 1.0,
       "useFirepitModel": "Wide"
@@ -45,10 +51,9 @@
       "attachShape": { "base": "bloodrites:block/cauldron" },
       "attachOffset": { "x": 0, "y": 0.12, "z": 0 },
       "attachScale": 1.0
-    }
+    }*/
+    "codeOverride": "cookingpot"
   },
-
-  "blockentity": { "class": "BlockEntityAlchemyCauldron" },
 
   "sounds": {
     "place": "game:block/metal",
