@@ -1,13 +1,9 @@
 ﻿using Vintagestory.API.Server;
-using System;
-using System.Collections.Generic;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
-using Vintagestory.API.Datastructures;
-using Vintagestory.API.MathTools;
-using Vintagestory.API.Util;
-using Vintagestory.GameContent;
+using HarmonyLib;
+
 
 namespace bloodrites
 {
@@ -18,9 +14,14 @@ namespace bloodrites
         // Useful for registering block/entity classes on both sides
         public override void Start(ICoreAPI api)
         {
-            Mod.Logger.Notification("Alchemy Cauldron: " + api.Side);
+            base.Start(api);
+
             api.RegisterBlockClass("BlockCookingCauldron", typeof(BlockCookingCauldron));
-            //api.RegisterBlockClass("BlockCookedCauldron", typeof(BlockCookedCauldron));
+            api.Logger.Notification("[BloodRites] Registered Alchemy Firepit + Cauldron");
+
+            var harmony = new Harmony("bloodrites.firepitpatch");
+            harmony.PatchAll(); // Applies all [HarmonyPatch] attributes in your mod assembly
+            api.Logger.Notification("[BloodRites] Harmony patch applied to BlockEntityFirepit.OnBurnTick()");
         }
 
         public override void StartServerSide(ICoreServerAPI api)

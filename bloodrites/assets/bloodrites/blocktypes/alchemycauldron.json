@@ -1,6 +1,7 @@
 ﻿{
   "code": "alchemycauldron",
   "class": "BlockCookingCauldron",
+  //"blockentity": { "class": "BlockEntityAlchemyFirepit" },
     "behaviors": [
     {
       "name": "GroundStorable",
@@ -32,9 +33,9 @@
   "attributes": {
     //"tempGlowMode": 1,
 	//"shelvable": true,
-    //"isCookVessel": true,
+    "isCookVessel": true,
     //"inFirepitRenderer": true,
-    ///"cookingContainerSlots": 4,
+    //"cookingContainerSlots": 4,
 	//"maxContainerSlotStackSize": 4,
     //"servingCapacity": 6,
 	//"storageType": 1,
@@ -52,7 +53,6 @@
       "attachOffset": { "x": 0, "y": 0.12, "z": 0 },
       "attachScale": 1.0
     }*/
-    "codeOverride": "cookingpot"
   },
 
   "sounds": {

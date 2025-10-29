@@ -11,7 +11,6 @@ namespace bloodrites
         private readonly ICoreClientAPI capi;
         private readonly BlockPos pos;
         private MultiTextureMeshRef cauldronMesh;
-        private MultiTextureMeshRef contentsMesh;
         private float temperature;
         private bool isOutputSlot;
         private readonly Matrixf modelMat = new Matrixf();
@@ -19,7 +18,9 @@ namespace bloodrites
         public double RenderOrder => 0.5;
         public int RenderRange => 24;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public CauldronInFirepitRenderer(ICoreClientAPI capi, ItemStack stack, BlockPos pos, bool isOutputSlot)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         {
             this.capi = capi;
             this.pos = pos;
@@ -84,20 +85,13 @@ namespace bloodrites
             prog.ProjectionMatrix = rpi.CurrentProjectionMatrix;
 
             rpi.RenderMultiTextureMesh(cauldronMesh, "tex", 0);
-
-            // Render contents if available
-            if (contentsMesh != null)
-            {
-                rpi.RenderMultiTextureMesh(contentsMesh, "tex", 0);
-            }
-
             prog.Stop();
         }
 
         public void Dispose()
         {
             cauldronMesh?.Dispose();
-            contentsMesh?.Dispose();
+            
         }
     }
 }
