@@ -1,9 +1,9 @@
-﻿using Vintagestory.API.Server;
+﻿using HarmonyLib;
+using System;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
-using HarmonyLib;
-
+using Vintagestory.API.Server;
 
 namespace bloodrites
 {
@@ -15,6 +15,9 @@ namespace bloodrites
         public override void Start(ICoreAPI api)
         {
             base.Start(api);
+
+            Console.BackgroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.White;
 
             api.RegisterBlockClass("BlockCookingCauldron", typeof(BlockCookingCauldron));
             api.Logger.Notification("[BloodRites] Registered Alchemy Firepit + Cauldron");

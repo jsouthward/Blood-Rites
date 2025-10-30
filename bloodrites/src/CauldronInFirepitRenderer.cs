@@ -8,6 +8,7 @@ namespace bloodrites
 {
     public class CauldronInFirepitRenderer : IInFirepitRenderer, IRenderer
     {
+
         private readonly ICoreClientAPI capi;
         private readonly BlockPos pos;
         private MultiTextureMeshRef cauldronMesh;

@@ -1,9 +1,10 @@
 ﻿{
   "code": "alchemycauldron",
   "class": "BlockCookingCauldron",
-  //"blockentity": { "class": "BlockEntityAlchemyFirepit" },
+  // "entityClass": "BlockEntityCauldron",
+  "entityClass": "Bucket",
     "behaviors": [
-    {
+    /*{
       "name": "GroundStorable",
       "properties": {
         "layout": "Quadrants",
@@ -17,10 +18,11 @@
         }
       }
     },
-    {"name": "Unplaceable"}
+    {"name": "Unplaceable"}*/
+    { name: "RightClickPickup"},
   ],
   "shape": { "base": "bloodrites:block/cauldron" },
-
+  
   "textures": {
 		"transparent": { "base": "game:block/transparent" },
 		"ceramic": { "base": "game:block/clay/pot/blue" }
@@ -34,12 +36,6 @@
     //"tempGlowMode": 1,
 	//"shelvable": true,
     "isCookVessel": true,
-    //"inFirepitRenderer": true,
-    //"cookingContainerSlots": 4,
-	//"maxContainerSlotStackSize": 4,
-    //"servingCapacity": 6,
-	//"storageType": 1,
-	//"maxTemperature": 200,
 
     /*"inFirePitProps": {
       "transform": { "translation": { "x": 0, "y": 0.1, "z": 0 } },
@@ -53,6 +49,20 @@
       "attachOffset": { "x": 0, "y": 0.12, "z": 0 },
       "attachScale": 1.0
     }*/
+
+    "liquidContainerProps": {
+		"capacityLitres": 3,
+		"transferSizeLitres": 1,
+		"emptyShapeLoc": "bloodrites:block/cauldron",
+		"opaqueContentShapeLoc": "bloodrites:shapes/block/cauldronContents",
+		"liquidContentShapeLoc": "bloodrites:shapes/block/cauldronliquidContents",
+		"liquidMaxYTranslate": 0.30
+	},
+
+    /*"watertightcontainer": {
+      "capacityLitres": 3,
+      "allowPickup": true
+    }*/
   },
 
   "sounds": {
@@ -62,6 +72,7 @@
     "walk": "game:walk/stone"
   },
   "lightAbsorption": 0,
+  "liquidSelectable": 1,
   "sideopaque": {"all": false},
   "sidesolid": {"all": false},
   "collisionbox": {

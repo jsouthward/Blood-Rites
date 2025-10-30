@@ -1,0 +1,35 @@
+﻿
+{
+"editor": {
+	"allAngles": false,
+	"entityTextureMode": false
+},
+"textureWidth": 16,
+"textureHeight": 16,
+"textureSizes": {
+},
+"textures": {
+	"inner side": "inner side",
+	"sides": "sides"
+},
+"elements": [
+		{
+			"name": "Floor",
+			"from": [ 5.0, 0.0, 5.0 ],
+			"to": [ 11.0, 1.0, 11.0 ],
+			"faces": {
+			},
+			"children": [
+				{
+					"name": "contents",
+					"from": [ 0.25, 0.0, 0.25 ],
+					"to": [ 5.75, 1.0, 5.75 ],
+					"renderPass": 4,
+					"rotationOrigin": [ 3.0, 0.0, 3.0 ],
+					"faces": {
+						"up": { "texture": "#water_bucket", "uv": [ 7.0, 7.0, 12.5, 12.5 ] }
+					}
+				}
+			]
+		}
+	]}

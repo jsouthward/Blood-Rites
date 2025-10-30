@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
@@ -6,7 +7,7 @@ using Vintagestory.GameContent;
 
 namespace bloodrites
 {
-    public class BlockCookingCauldron : Block, IInFirepitRendererSupplier
+    public class BlockCookingCauldron : BlockBucket, IInFirepitRendererSupplier
     {
         public override void OnLoaded(ICoreAPI api)
         {
@@ -30,6 +31,7 @@ namespace bloodrites
 
         public void OnHeated(BlockEntityFirepit firepit, float temperature)
         {
+
             if (firepit == null || firepit.Api == null) return;
 
             // --- Simple one-time trigger logic using a static HashSet ---
