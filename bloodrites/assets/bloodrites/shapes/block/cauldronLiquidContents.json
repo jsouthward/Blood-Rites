@@ -9,6 +9,7 @@
 "textureSizes": {
 },
 "textures": {
+	"contents": "game:block/waterstill",
 	"inner side": "inner side",
 	"sides": "sides"
 },
@@ -27,7 +28,7 @@
 					"renderPass": 4,
 					"rotationOrigin": [ 3.0, 0.0, 3.0 ],
 					"faces": {
-						"up": { "texture": "#water_bucket", "uv": [ 7.0, 7.0, 12.5, 12.5 ] }
+						"up": { "texture": "#contents", "uv": [ 7.0, 7.0, 12.5, 12.5 ] }
 					}
 				}
 			]

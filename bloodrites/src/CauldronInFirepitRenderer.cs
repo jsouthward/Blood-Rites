@@ -1,6 +1,7 @@
 ﻿using System;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
@@ -15,7 +16,8 @@ namespace bloodrites
         private float temperature;
         private bool isOutputSlot;
         private readonly Matrixf modelMat = new Matrixf();
-
+        // Track liquid data
+        private MultiTextureMeshRef liquidMesh;
         public double RenderOrder => 0.5;
         public int RenderRange => 24;
 
@@ -46,8 +48,65 @@ namespace bloodrites
                 capi.World.Logger.Error("[BloodRites] Failed to tesselate cauldron shape: {0}", e);
             }
 
-            // 3. Optional contents — show bubbling effect if cooking something
-           
+            // 3. liquid 
+            var liquidShape = Shape.TryGet(capi, "bloodrites:shapes/block/cauldronLiquidContents.json");
+            if (liquidShape != null)
+            {
+                try
+                {
+                    var contentsTree = stack.Attributes?["contents"] as ITreeAttribute;
+                    if (contentsTree == null)
+                    {
+                        capi.World.Logger.Notification("[BloodRites] Cauldron Is Empty (has NO contents attribute yet)");
+                        return;
+                    }
+
+                    if (!contentsTree.HasAttribute("0"))
+                    {
+                        capi.World.Logger.Notification("[BloodRites] Cauldron is empty (no slot 0)");
+                        return;
+                    }
+
+                    ItemStack liquidStack = contentsTree.GetItemstack("0");
+                    if (liquidStack == null)
+                    {
+                        capi.World.Logger.Notification("[BloodRites] Contents exists, but liquidStack is NULL");
+                        return;
+                    }
+
+                    liquidStack.ResolveBlockOrItem(capi.World);
+
+                    if (liquidStack.Collectible == null)
+                    {
+                        capi.World.Logger.Error("[BloodRites] ERROR: liquidStack collectible still NULL!");
+                        return;
+                    }
+
+                    int portions = liquidStack.StackSize;
+                    string liquidCode = liquidStack.Collectible.Code.ToString();
+
+                    capi.World.Logger.Notification($"Liquid: {liquidCode}, portions = {portions}");
+
+
+                    // Tesselate liquid shape
+                    capi.Tesselator.TesselateShape(liquidStack.Collectible, liquidShape, out var lmesh);
+
+                    // TEMP: lift high so can see it
+                    lmesh.Translate(0f, 0.45f, 0f);
+
+                    liquidMesh = capi.Render.UploadMultiTextureMesh(lmesh);
+                    capi.World.Logger.Notification("[BloodRites] ✅ Liquid mesh created");
+                }
+                catch (Exception e)
+                {
+                    capi.World.Logger.Error("[BloodRites] Liquid tesselation failure: " + e);
+                }
+            }
+            else
+            {
+                capi.World.Logger.Error("[BloodRites] Could not load cauldron liquid shape!");
+            }
+
         }
 
         public void OnUpdate(float temperature)
@@ -62,6 +121,7 @@ namespace bloodrites
 
         public void OnRenderFrame(float dt, EnumRenderStage stage)
         {
+            // Render Cauldron mesh
             if (cauldronMesh == null) return;
 
             var rpi = capi.Render;
@@ -87,12 +147,36 @@ namespace bloodrites
 
             rpi.RenderMultiTextureMesh(cauldronMesh, "tex", 0);
             prog.Stop();
+
+            // Render Liquid mesh old 
+            // --- Render TEMP liquid plane ---
+            if (liquidMesh != null && stage == EnumRenderStage.Opaque)
+            {
+                var prog2 = rpi.PreparedStandardShader(pos.X, pos.Y, pos.Z);
+                //prog2.RgbaTint = new Vec4f(1f, 0f, 0f, 1f); // 🔴 MAKE LIQUID BRIGHT RED FOR DEBUG
+                prog2.RgbaAmbientIn = rpi.AmbientColor;
+                prog2.RgbaFogIn = rpi.FogColor;
+                prog2.FogMinIn = rpi.FogMin;
+                prog2.FogDensityIn = rpi.FogDensity;
+                prog2.NormalShaded = 1;
+
+                prog2.ModelMatrix = modelMat.Identity()
+                    .Translate(pos.X - cam.X, pos.Y - cam.Y, pos.Z - cam.Z)
+                    .Values;
+
+                prog2.ViewMatrix = rpi.CameraMatrixOriginf;
+                prog2.ProjectionMatrix = rpi.CurrentProjectionMatrix;
+
+                rpi.RenderMultiTextureMesh(liquidMesh, "tex", 0);
+                prog2.Stop();
+            }
         }
+
 
         public void Dispose()
         {
             cauldronMesh?.Dispose();
-            
+            liquidMesh?.Dispose();
         }
     }
 }

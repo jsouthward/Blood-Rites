@@ -1,0 +1,18 @@
+﻿{
+  "textureWidth": 16,
+  "textureHeight": 16,
+  "textures": {
+    "liquid": "game:block/waterstill"
+  },
+  "elements": [
+    {
+      "name": "liquid",
+      "from": [0, 0, 0],
+      "to":   [16, 1, 16],
+      "faces": {
+        "up":    { "texture": "#liquid" },
+        "down":  { "texture": "#liquid" }
+      }
+    }
+  ]
+}

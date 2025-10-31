@@ -1,7 +1,6 @@
 ﻿{
   "code": "alchemycauldron",
   "class": "BlockCookingCauldron",
-  // "entityClass": "BlockEntityCauldron",
   "entityClass": "Bucket",
     "behaviors": [
     /*{

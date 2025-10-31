@@ -16,14 +16,11 @@ namespace bloodrites
         {
             base.Start(api);
 
-            Console.BackgroundColor = ConsoleColor.Red;
-            Console.ForegroundColor = ConsoleColor.White;
-
             api.RegisterBlockClass("BlockCookingCauldron", typeof(BlockCookingCauldron));
             api.Logger.Notification("[BloodRites] Registered Alchemy Firepit + Cauldron");
 
             var harmony = new Harmony("bloodrites.firepitpatch");
-            harmony.PatchAll(); // Applies all [HarmonyPatch] attributes in your mod assembly
+            harmony.PatchAll(); // Applies all [HarmonyPatch] attributes in mod assembly
             api.Logger.Notification("[BloodRites] Harmony patch applied to BlockEntityFirepit.OnBurnTick()");
         }
 
