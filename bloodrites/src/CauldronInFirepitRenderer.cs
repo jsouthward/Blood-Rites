@@ -20,6 +20,9 @@ namespace bloodrites
         private MultiTextureMeshRef liquidMesh;
         public double RenderOrder => 0.5;
         public int RenderRange => 24;
+        //Cauldron liquid render 
+        private const float CauldronMaxFillHeight = 0.36f;
+        private const float CauldronMaxPortions = 300f;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public CauldronInFirepitRenderer(ICoreClientAPI capi, ItemStack stack, BlockPos pos, bool isOutputSlot)
@@ -90,9 +93,9 @@ namespace bloodrites
 
                     // Tesselate liquid shape
                     capi.Tesselator.TesselateShape(liquidStack.Collectible, liquidShape, out var lmesh);
-
-                    // TEMP: lift high so can see it
-                    lmesh.Translate(0f, 0.45f, 0f);
+                    // Move liqid shape up or down for fill level
+                    float fillLevel = GameMath.Clamp(portions / CauldronMaxPortions, 0f, 1f);
+                    lmesh.Translate(0f, fillLevel * CauldronMaxFillHeight, 0f);
 
                     liquidMesh = capi.Render.UploadMultiTextureMesh(lmesh);
                     capi.World.Logger.Notification("[BloodRites] ✅ Liquid mesh created");
@@ -111,7 +114,7 @@ namespace bloodrites
 
         public void OnUpdate(float temperature)
         {
-            this.temperature = temperature;
+            
         }
 
         public void OnCookingComplete()
@@ -148,12 +151,12 @@ namespace bloodrites
             rpi.RenderMultiTextureMesh(cauldronMesh, "tex", 0);
             prog.Stop();
 
-            // Render Liquid mesh old 
-            // --- Render TEMP liquid plane ---
+            
+            // --- Render liquid Mesh plane ---
             if (liquidMesh != null && stage == EnumRenderStage.Opaque)
             {
                 var prog2 = rpi.PreparedStandardShader(pos.X, pos.Y, pos.Z);
-                //prog2.RgbaTint = new Vec4f(1f, 0f, 0f, 1f); // 🔴 MAKE LIQUID BRIGHT RED FOR DEBUG
+                //prog2.RgbaTint = new Vec4f(1f, 0f, 0f, 1f); // MAKE LIQUID BRIGHT RED FOR DEBUG
                 prog2.RgbaAmbientIn = rpi.AmbientColor;
                 prog2.RgbaFogIn = rpi.FogColor;
                 prog2.FogMinIn = rpi.FogMin;
