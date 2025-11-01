@@ -7,7 +7,7 @@
         "Moderate Hilarity"
     ],
     "description": "To be added",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "dependencies": {
         "game": "1.21.5"
     }

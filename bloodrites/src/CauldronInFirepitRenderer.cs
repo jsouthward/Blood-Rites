@@ -15,6 +15,7 @@ namespace bloodrites
         private MultiTextureMeshRef cauldronMesh;
         private float temperature;
         private bool isOutputSlot;
+        private ItemStack stack;
         private readonly Matrixf modelMat = new Matrixf();
         // Track liquid data
         private MultiTextureMeshRef liquidMesh;
@@ -23,16 +24,24 @@ namespace bloodrites
         //Cauldron liquid render 
         private const float CauldronMaxFillHeight = 0.36f;
         private const float CauldronMaxPortions = 300f;
-
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public CauldronInFirepitRenderer(ICoreClientAPI capi, ItemStack stack, BlockPos pos, bool isOutputSlot)
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+
         {
             this.capi = capi;
             this.pos = pos;
             this.isOutputSlot = isOutputSlot;
+            this.stack = stack;
 
-            // 1. Load your cauldron shape safely
+            // 1. Load Cauldron
+            BuildCauldronMesh(stack);
+            // 3. Add liquid to Cauldron
+            BuildLiquidMesh(stack);
+
+        }
+        private void BuildCauldronMesh(ItemStack stack)
+        {
             var shape = Shape.TryGet(capi, "bloodrites:shapes/block/cauldron.json");
             if (shape == null)
             {
@@ -50,8 +59,9 @@ namespace bloodrites
             {
                 capi.World.Logger.Error("[BloodRites] Failed to tesselate cauldron shape: {0}", e);
             }
-
-            // 3. liquid 
+        }
+        private void BuildLiquidMesh(ItemStack stack)
+        {
             var liquidShape = Shape.TryGet(capi, "bloodrites:shapes/block/cauldronLiquidContents.json");
             if (liquidShape != null)
             {
@@ -109,12 +119,11 @@ namespace bloodrites
             {
                 capi.World.Logger.Error("[BloodRites] Could not load cauldron liquid shape!");
             }
-
         }
 
         public void OnUpdate(float temperature)
         {
-            
+            this.temperature = temperature;
         }
 
         public void OnCookingComplete()
