@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -9,19 +11,21 @@ namespace bloodrites
 {
     public class bloodritesModSystem : ModSystem
     {
-
-        // Called on server and client
-        // Useful for registering block/entity classes on both sides
         public override void Start(ICoreAPI api)
         {
             base.Start(api);
 
             api.RegisterBlockClass("BlockCookingCauldron", typeof(BlockCookingCauldron));
-            api.Logger.Notification("[BloodRites] Registered Alchemy Firepit + Cauldron");
+            //api.Logger.Notification("[BloodRites] Registered Alchemy Firepit + Cauldron");
 
             var harmony = new Harmony("bloodrites.firepitpatch");
-            harmony.PatchAll(); // Applies all [HarmonyPatch] attributes in mod assembly
-            api.Logger.Notification("[BloodRites] Harmony patch applied to BlockEntityFirepit.OnBurnTick()");
+            harmony.PatchAll();
+            //api.Logger.Notification("[BloodRites] Harmony patch applied to BlockEntityFirepit.OnBurnTick()");
+            
+            LoadAlchemyRecipes(api);
+            api.Logger.Notification("[BloodRites] Loading Alchemy Recipes...");
+
+
         }
 
         public override void StartServerSide(ICoreServerAPI api)
@@ -32,6 +36,11 @@ namespace bloodrites
         public override void StartClientSide(ICoreClientAPI api)
         {
             Mod.Logger.Notification("Hello from template mod client side: " + Lang.Get("bloodrites:hello"));
+        }
+
+        private void LoadAlchemyRecipes(ICoreAPI api)
+        {
+            
         }
 
     }
