@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 
@@ -18,100 +19,181 @@ namespace bloodrites
         public IInFirepitRenderer GetRendererWhenInFirepit(ItemStack stack, BlockEntityFirepit firepit, bool forOutputSlot)
         {
             ICoreClientAPI capi = (ICoreClientAPI)firepit.Api;
-            capi.Logger.Notification("[BloodRites] Creating custom CauldronInFirepitRenderer!");
             return new CauldronInFirepitRenderer(capi, stack, firepit.Pos, forOutputSlot);
         }
 
         public EnumFirepitModel GetDesiredFirepitModel(ItemStack stack, BlockEntityFirepit firepit, bool forOutputSlot)
         {
-            return EnumFirepitModel.Wide; // Matches the shape of your cauldron
+            return EnumFirepitModel.Wide;
         }
+
+        // --------------------------------------------------------------------
 
         private static readonly Dictionary<BlockPos, List<string>> absorbedItems = new();
 
+        private static readonly List<AlchemyRecipe> Recipes = new()
+        {
+            new AlchemyRecipe {
+                Code = "bloodbroth",
+                Ingredients = new Dictionary<string,int> {
+                    { "game:redmeat-raw", 1 },
+                    { "game:salt", 1 }
+                },
+                OutputLiquidCode = "bloodrites:bloodportion",
+                OutputLitres = 3f
+            }
+        };
+
+        // --------------------------------------------------------------------
+
         public void OnHeated(BlockEntityFirepit firepit, float temperature)
         {
+            if (firepit?.Api?.Side != EnumAppSide.Server) return;
+            if (temperature <= 200) return;
 
-            if (firepit == null || firepit.Api == null) return;
+            var vesselSlot = firepit.Inventory?[1];
+            var cauldronStack = vesselSlot?.Itemstack;
+            if (cauldronStack == null) return;
 
-            // --- Simple one-time trigger logic using a static HashSet ---
-            // This avoids needing Attributes, since those are no longer on the firepit entity.
-            string key = firepit.Pos.ToString();
-
-            if (!recentlyHeatedFirepits.Contains(key) && temperature > 200)
+            if (!absorbedItems.TryGetValue(firepit.Pos, out var list))
             {
-                recentlyHeatedFirepits.Add(key);
-                firepit.Api.Logger.Notification($"[BloodRites] Alchemy Cauldron {key} Hot! Temp: {temperature}");
+                list = new List<string>();
+                absorbedItems[firepit.Pos] = list;
             }
 
-            // run logic only when temperature is high enough
-            if (temperature > 200)
+            bool absorbedAnything = false;
+
+            var entities = firepit.Api.World.GetEntitiesAround(
+                firepit.Pos.ToVec3d().Add(0.5, 0, 0.5), 1.5f, 1.0f
+            );
+
+            foreach (var ent in entities)
             {
-                // Find all dropped items near the firepit
-                var entities = firepit.Api.World.GetEntitiesAround(
-                    firepit.Pos.ToVec3d().Add(0.5, 0, 0.5), 1.5f, 1.0f
-                );
+                if (ent is not EntityItem item || item.Itemstack == null) continue;
 
-                // Get or create a local list of absorbed item codes for this firepit
-                if (!absorbedItems.TryGetValue(firepit.Pos, out var list))
-                {
-                    list = new List<string>();
-                    absorbedItems[firepit.Pos] = list;
-                }
+                string code = item.Itemstack.Collectible.Code.ToString();
+                list.Add(code);
+                absorbedAnything = true;
 
-                foreach (var ent in entities)
-                {
-                    if (ent is EntityItem item && item.Itemstack != null && item.Itemstack.StackSize > 0)
-                    {
-                        string code = item.Itemstack.Collectible.Code.ToShortString();
+                firepit.Api.Logger.Notification($"[BloodRites] Cauldron absorbed: {code}");
+                item.Die();
 
-                        // Add the item to our memory list
-                        list.Add(code);
-                        // Log for debugging
-                        firepit.Api.Logger.Notification($"[BloodRites] Cauldron absorbed: {code}");
-                        // Remove it from the world
-                        item.Die();
-
-                        // Bubble burst when an item is absorbed
-                        var world = firepit.Api.World;
-                        // where the bubbles start (centered above the pit a bit)
-                        var basePos = firepit.Pos.ToVec3d().Add(0.35, 0.2, 0.4);
-                        // define particles via fields (version-safe)
-                        var p = new SimpleParticleProperties()
-                        {
-                            MinQuantity = 8,
-                            AddQuantity = 6,
-                            // soft blood-red bubbles
-                            Color = ColorUtil.ToRgba(180, 200, 50, 60),
-                            MinPos = basePos,
-                            AddPos = new Vec3d(0.18, 0.08, 0.18),
-                            // gentle upward motion
-                            MinVelocity = new Vec3f(0f, 0.12f, 0f),
-                            AddVelocity = new Vec3f(0.03f, 0.12f, 0.03f),
-                            LifeLength = 1.5f,
-                            // keep gravity simple to avoid API differences
-                            GravityEffect = 0f,
-                            MinSize = 0.1f,
-                            MaxSize = 0.32f,
-                            ParticleModel = EnumParticleModel.Quad
-                        };
-                        world.SpawnParticles(p);
-
-                        world.PlaySoundAt(
-                            new AssetLocation("game:sounds/effect/extinguish1.ogg"),
-                            firepit.Pos.X + 0.5, firepit.Pos.Y + 0.5, firepit.Pos.Z + 0.5,
-                            null, 0.4f, 8f
-                        );
-
-                    }
-                }
+                SpawnBubbleEffect(firepit);
             }
 
+            if (absorbedAnything)
+            {
+                if (TryApplyRecipe(firepit, vesselSlot!, list))
+                {
+                    firepit.MarkDirty(true);
+                }
+            }
         }
 
-        // Static memory to avoid logging spam
-        private static readonly HashSet<string> recentlyHeatedFirepits = new();
+        // --------------------------------------------------------------------
 
+        private static bool TryApplyRecipe(BlockEntityFirepit firepit, ItemSlot vesselSlot, List<string> absorbedList)
+        {
+            var counts = new Dictionary<string, int>();
+            foreach (var c in absorbedList)
+            {
+                if (!counts.TryAdd(c, 1)) counts[c]++;
+            }
+
+            foreach (var r in Recipes)
+            {
+                bool ok = true;
+                foreach (var req in r.Ingredients)
+                {
+                    if (!counts.TryGetValue(req.Key, out int have) || have < req.Value) { ok = false; break; }
+                }
+                if (!ok) continue;
+
+                // --- IMPORTANT: clone + replace stack so it syncs ---
+                var oldStack = vesselSlot.Itemstack;
+                if (oldStack == null) return false;
+
+                var newStack = oldStack.Clone();                 // new instance -> network notices
+                if (!SetContainerContents(firepit.Api, newStack, r.OutputLiquidCode, r.OutputLitres))
+                    return false;
+
+                vesselSlot.Itemstack = newStack;
+                vesselSlot.MarkDirty();
+
+                // also mark the BE dirty (belt & braces)
+                firepit.MarkDirty(true);
+                firepit.Api.World.BlockAccessor.MarkBlockEntityDirty(firepit.Pos);
+
+                absorbedList.Clear();
+
+                firepit.Api.Logger.Notification(
+                    $"[BloodRites] Recipe '{r.Code}' -> liquid '{r.OutputLiquidCode}' ({r.OutputLitres}L)"
+                );
+
+                return true;
+            }
+
+            return false;
+        }
+
+        // --------------------------------------------------------------------
+        // IMPORTANT: For BlockBucket/BlockContainer, use "contents" + "quantity" (int portions)
+        // Typical convention: 100 portions = 1 litre. So 3L => 300 portions.
+        private static bool SetContainerContents(ICoreAPI api, ItemStack vesselStack, string liquidCode, float litres)
+        {
+            vesselStack.Attributes ??= new Vintagestory.API.Datastructures.TreeAttribute();
+
+            // 1) Resolve liquid collectible (usually an Item: e.g. game:waterportion)
+            var loc = new AssetLocation(liquidCode);
+
+            CollectibleObject? coll = api.World.GetItem(loc);
+            coll ??= api.World.GetBlock(loc);
+
+            if (coll == null)
+            {
+                api.Logger.Warning("[BloodRites] Liquid collectible not found: {0}", liquidCode);
+                return false;
+            }
+
+            // 2) Build the stored liquid stack (type only; quantity is stored separately as "quantity")
+            var liquidStack = new ItemStack(coll, 1);
+            liquidStack.ResolveBlockOrItem(api.World);
+
+            // 3) IMPORTANT: store "contents" as an ItemstackAttribute (SetItemstack does this)
+            vesselStack.Attributes.SetItemstack("contents", liquidStack);
+
+            // 4) Buckets use "quantity" as portions (100 portions per litre is a common pattern)
+            int portions = (int)GameMath.Clamp(litres * 100f, 0f, 300f);
+            vesselStack.Attributes.SetInt("quantity", portions);
+
+            // Optional: if you want to debug what’s actually stored
+            api.Logger.Notification($"[BloodRites] Set contents={liquidCode}, quantity={portions}");
+
+            return true;
+        }
+
+        private static void SpawnBubbleEffect(BlockEntityFirepit firepit)
+        {
+            var world = firepit.Api.World;
+            var basePos = firepit.Pos.ToVec3d().Add(0.35, 0.2, 0.4);
+
+            var p = new SimpleParticleProperties()
+            {
+                MinQuantity = 8,
+                AddQuantity = 6,
+                Color = ColorUtil.ToRgba(180, 200, 50, 60),
+                MinPos = basePos,
+                AddPos = new Vec3d(0.18, 0.08, 0.18),
+                MinVelocity = new Vec3f(0f, 0.12f, 0f),
+                AddVelocity = new Vec3f(0.03f, 0.12f, 0.03f),
+                LifeLength = 1.5f,
+                GravityEffect = 0f,
+                MinSize = 0.1f,
+                MaxSize = 0.32f,
+                ParticleModel = EnumParticleModel.Quad
+            };
+
+            world.SpawnParticles(p);
+        }
     }
-
 }
