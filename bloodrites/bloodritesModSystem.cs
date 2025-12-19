@@ -20,11 +20,7 @@ namespace bloodrites
 
             var harmony = new Harmony("bloodrites.firepitpatch");
             harmony.PatchAll();
-            //api.Logger.Notification("[BloodRites] Harmony patch applied to BlockEntityFirepit.OnBurnTick()");
-
-            LoadAlchemyRecipes(api);
-            api.Logger.Notification("[BloodRites] Loading Alchemy Recipes...");
-
+            //api.Logger.Notification("[BloodRites] Harmony patch applied to BlockEntityFirepit.OnBurnTick
 
         }
 
@@ -36,11 +32,6 @@ namespace bloodrites
         public override void StartClientSide(ICoreClientAPI api)
         {
             Mod.Logger.Notification("Hello from template mod client side: " + Lang.Get("bloodrites:hello"));
-        }
-
-        private void LoadAlchemyRecipes(ICoreAPI api)
-        {
-            
         }
 
     }

@@ -1,8 +1,0 @@
-﻿  "code": "growth-essence",
-  "liquid": "game:liquid/waterportion",
-  "ingredients": [
-    { "type": "item", "code": "game:resource/cattailtops", "quantity": 1 },
-    { "type": "item", "code": "game:resource/bone", "quantity": 1 }
-  ],
-  "output": { "code": "game:liquid/honeyportion", "quantity": 100 },
-}

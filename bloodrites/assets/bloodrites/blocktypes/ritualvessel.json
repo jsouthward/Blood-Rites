@@ -1,32 +1,38 @@
 ﻿{
-  "code": "alchemycauldron",
-  "class": "BlockCookingCauldron",
-  "entityClass": "Bucket",
-    "behaviors": [
-    { name: "RightClickPickup"},
-  ],
-  "shape": { "base": "bloodrites:block/cauldron" },
+  "code": "ritualvessel",
+  "class": "BlockBucket",
+	"behaviors": [
+		{"name": "UnstableFalling"}, 
+		{"name": "RightClickPickup"}, 
+		{"name": "MilkingContainer" } 
+	],
+	"entityClass": "Bucket",
+  "shape": { "base": "bloodrites:block/ritualvessel" },
   
   "textures": {
-		"transparent": { "base": "game:block/transparent" },
-		"ceramic": { "base": "game:block/clay/pot/blue" }
+		"glass": { "base": "game:block/glass/quartz" },
+		"smoky": { "base": "game:block/glass/smoky" },
+        "vintage": { "base": "game:block/glass/vintage" },
+        "wood": { "base": "game:block/wood/debarked/aged" }
 	},
   
   "doNotRenderAtLod2": true,
-  "blockmaterial": "Ceramic",
+  "blockmaterial": "glass",
   "creativeinventory": { "general": ["*"], "bloodrites": [ "*" ] },
 
   "attributes": {
     "tempGlowMode": 1,
 	"shelvable": true,
-    "isCookVessel": true,
+
+    "drawtype": "json",
+    "renderpass": "cutout",
 
     "liquidContainerProps": {
-		"capacityLitres": 3,
+		"capacityLitres": 6,
 		"transferSizeLitres": 1,
-		"emptyShapeLoc": "bloodrites:block/cauldron",
-		"opaqueContentShapeLoc": "bloodrites:shapes/block/cauldronContents",
-		"liquidContentShapeLoc": "bloodrites:shapes/block/cauldronliquidContents",
+		"emptyShapeLoc": "bloodrites:block/ritualvessel",
+		"opaqueContentShapeLoc": "bloodrites:shapes/block/vesselContents",
+		"liquidContentShapeLoc": "bloodrites:shapes/block/vesselLiquidContents",
 		"liquidMaxYTranslate": 0.30
 	},
 
@@ -37,10 +43,10 @@
   },
 
   "sounds": {
-    "place": "game:block/metal",
-    "break": "game:block/metal",
-    "hit": "game:block/metal",
-    "walk": "game:walk/stone"
+    "place": "game:block/glass",
+    "break": "game:block/glass",
+    "hit": "game:block/glass",
+    "walk": "game:walk/glass"
   },
   "lightAbsorption": 0,
   "liquidSelectable": 1,
@@ -63,7 +69,7 @@
     "y2": 0.3125,
     "z2": 0.72
   },
-  "guiTransform": {"origin": {"x": 0.5, "y": 0.2, "z": 0.5}, "scale": 2},
+  "guiTransform": {"origin": {"x": 0.5, "y": 0.2, "z": 0.5}, "scale": 1.5},
   "groundTransform": {"scale": 3},
   "fpHandTransform": {"translation": {"x": 0, "y": 0.1, "z": 0.5}, "scale": 2},
   "tpHandTransform": {
@@ -74,6 +80,6 @@
   },
 
   "drops": [
-    { "type": "block", "code": "bloodrites:alchemycauldron" }
+    { "type": "block", "code": "bloodrites:ritualvessel" }
   ]
 }

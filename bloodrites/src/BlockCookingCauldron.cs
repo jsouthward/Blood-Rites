@@ -318,7 +318,7 @@ namespace bloodrites
             {
                 MinQuantity = 2,
                 AddQuantity = 3,
-                Color = ColorUtil.ToRgba(200, 225, 225, 30),
+                Color = ColorUtil.ToRgba(255, 210, 240, 255),
 
                 // Spread across the cauldron surface
                 MinPos = basePos,

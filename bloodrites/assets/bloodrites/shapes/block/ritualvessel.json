@@ -1,0 +1,115 @@
+﻿{
+	"editor": {
+		"allAngles": true,
+		"entityTextureMode": true
+	},
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textureSizes": {
+	},
+	"textures": {
+        "glass": "game:block/glass/quartz",
+        "smoky": "game:block/glass/smoky",
+        "vintage": "game:block/glass/vintage",
+        "wood": "game:block/wood/debarked/aged",
+	},
+	"elements": [
+		{
+			"name": "Base",
+			"from": [ 5.5, 0.0, 5.5 ],
+			"to": [ 10.5, 1.0, 10.5 ],
+			"renderPass": 3,
+			"rotationOrigin": [ 8.0, 0.0, 8.0 ],
+			"faces": {
+				"north": { "texture": "#glass", "uv": [ 10.0, 9.0, 15.0, 10.0 ] },
+				"east": { "texture": "#glass", "uv": [ 10.0, 9.0, 15.0, 10.0 ] },
+				"south": { "texture": "#glass", "uv": [ 10.0, 9.0, 15.0, 10.0 ] },
+				"west": { "texture": "#glass", "uv": [ 10.0, 9.0, 15.0, 10.0 ] },
+				"down": { "texture": "#glass", "uv": [ 10.0, 9.5, 15.0, 14.5 ] }
+			},
+			"children": [
+				{
+					"name": "back",
+					"from": [ -0.5, 1.0, -0.5 ],
+					"to": [ 5.5, 8.0, 0.5 ],
+					"renderPass": 3,
+					"rotationOrigin": [ 0.0, 1.0, 0.0 ],
+					"faces": {
+						"north": { "texture": "#glass", "uv": [ 0.0, 0.0, 6.0, 7.0 ] },
+						"east": { "texture": "#glass", "uv": [ 0.0, 0.0, 1.0, 7.0 ] },
+						"west": { "texture": "#glass", "uv": [ 0.0, 0.0, 1.0, 7.0 ] },
+						"up": { "texture": "#glass", "uv": [ 0.0, 0.0, 6.0, 1.0 ] },
+						"down": { "texture": "#glass", "uv": [ 0.0, 0.0, 6.0, 1.0 ] }
+					}
+				},
+				{
+					"name": "front",
+					"from": [ -0.5, 1.0, 4.5 ],
+					"to": [ 5.5, 8.0, 5.5 ],
+					"renderPass": 3,
+					"rotationOrigin": [ 0.0, 1.0, 5.0 ],
+					"faces": {
+						"east": { "texture": "#glass", "uv": [ 0.0, 0.0, 1.0, 7.0 ] },
+						"south": { "texture": "#glass", "uv": [ 0.0, 0.0, 6.0, 7.0 ] },
+						"west": { "texture": "#glass", "uv": [ 0.0, 0.0, 1.0, 7.0 ] },
+						"up": { "texture": "#glass", "uv": [ 0.0, 0.0, 6.0, 1.0 ] },
+						"down": { "texture": "#glass", "uv": [ 0.0, 0.0, 6.0, 1.0 ] }
+					}
+				},
+				{
+					"name": "left",
+					"from": [ -0.5, 1.0, 0.5 ],
+					"to": [ 0.5, 8.0, 4.5 ],
+					"renderPass": 3,
+					"rotationOrigin": [ 0.0, 1.0, 1.0 ],
+					"faces": {
+						"west": { "texture": "#glass", "uv": [ 0.0, 0.0, 4.0, 7.0 ] },
+						"up": { "texture": "#glass", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
+						"down": { "texture": "#glass", "uv": [ 0.0, 0.0, 1.0, 4.0 ] }
+					}
+				},
+				{
+					"name": "right",
+					"from": [ 4.5, 1.0, 0.5 ],
+					"to": [ 5.5, 8.0, 4.5 ],
+					"renderPass": 3,
+					"rotationOrigin": [ 5.0, 1.0, 1.0 ],
+					"faces": {
+						"east": { "texture": "#glass", "uv": [ 0.0, 0.0, 4.0, 7.0 ] },
+						"up": { "texture": "#glass", "uv": [ 0.0, 0.0, 1.0, 4.0 ] },
+						"down": { "texture": "#glass", "uv": [ 0.0, 0.0, 1.0, 4.0 ] }
+					}
+				}
+			]
+		},
+		{
+			"name": "Cork",
+			"from": [ 5.5, 8.25, 5.5 ],
+			"to": [ 10.5, 9.25, 10.5 ],
+			"rotationOrigin": [ 5.5, 8.0, 5.5 ],
+			"faces": {
+				"north": { "texture": "#wood", "uv": [ 10.5, 7.5, 15.5, 8.5 ] },
+				"east": { "texture": "#wood", "uv": [ 10.5, 7.5, 15.5, 8.5 ] },
+				"south": { "texture": "#wood", "uv": [ 10.5, 7.5, 15.5, 8.5 ] },
+				"west": { "texture": "#wood", "uv": [ 10.5, 7.5, 15.5, 8.5 ] },
+				"up": { "texture": "#wood", "uv": [ 3.0, 1.0, 8.0, 6.0 ], "rotation": 180 },
+				"down": { "texture": "#wood", "uv": [ 0.0, 0.0, 5.0, 5.0 ] }
+			},
+			"children": [
+				{
+					"name": "Cork2",
+					"from": [ 0.5, -1.5, 0.5 ],
+					"to": [ 4.5, 0.0, 4.5 ],
+					"rotationOrigin": [ 1.0, -2.0, 0.0 ],
+					"faces": {
+						"north": { "texture": "#wood", "uv": [ 10.5, 7.5, 15.5, 8.5 ] },
+						"east": { "texture": "#wood", "uv": [ 10.5, 7.5, 15.5, 8.5 ] },
+						"south": { "texture": "#wood", "uv": [ 10.5, 7.5, 15.5, 8.5 ] },
+						"west": { "texture": "#wood", "uv": [ 10.5, 7.5, 15.5, 8.5 ] },
+						"up": { "texture": "#wood", "uv": [ 3.0, 1.0, 7.0, 5.0 ], "rotation": 180 },
+						"down": { "texture": "#wood", "uv": [ 0.5, 0.5, 4.5, 4.5 ] }
+					}
+				}
+			]
+		}
+	]}
