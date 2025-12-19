@@ -10,6 +10,25 @@ namespace bloodrites
 {
     public class BlockCookingCauldron : BlockBucket, IInFirepitRendererSupplier
     {
+        private static readonly Dictionary<BlockPos, double> recipeOkSinceMs = new();
+        private static readonly Dictionary<BlockPos, string> recipeOkCode = new();
+        private const double BubbleDelayMs = 5_000;
+        private static readonly AssetLocation SoundBurn = new AssetLocation("game", "sounds/effect/extinguish1");
+        private static readonly AssetLocation SoundSuccess = new AssetLocation("game", "sounds/tutorialstepsuccess");
+
+        private static void PlaySound(IWorldAccessor world, AssetLocation sound, BlockPos pos)
+        {
+            world.PlaySoundAt(
+                sound,
+                pos.X + 0.5,
+                pos.Y + 0.5,
+                pos.Z + 0.5,
+                null, 
+                randomizePitch: true,
+                range: 16f,
+                volume: 1f
+            );
+        }
         public override void OnLoaded(ICoreAPI api)
         {
             base.OnLoaded(api);
@@ -39,20 +58,50 @@ namespace bloodrites
                     { "game:redmeat-raw", 1 },
                     { "game:salt", 1 }
                 },
+                InputLiquidCode = "game:waterportion",
+                InputLiquidPortions = 300,
                 OutputLiquidCode = "bloodrites:bloodportion",
-                OutputLitres = 3f
+                OutputLitres = 300
             }
         };
 
         // --------------------------------------------------------------------
 
+        private static bool CauldronHasLiquid(ItemStack cauldronStack)
+        {
+            var tree = cauldronStack.Attributes?["contents"] as ITreeAttribute;
+            if (tree == null || !tree.HasAttribute("0")) return false;
+
+            var s = tree.GetItemstack("0");
+            return s != null && s.StackSize > 0;
+        }
+
         public void OnHeated(BlockEntityFirepit firepit, float temperature)
         {
-            if (firepit?.Api?.Side != EnumAppSide.Server) return;
-            if (temperature <= 200) return;
+            if (firepit?.Api == null) return;
 
             var vesselSlot = firepit.Inventory?[1];
             var cauldronStack = vesselSlot?.Itemstack;
+
+            // CLIENT: visuals only
+            if (firepit.Api.Side == EnumAppSide.Client)
+            {
+                if (temperature > 500 && cauldronStack != null && CauldronHasLiquid(cauldronStack))
+                {
+                    double now = firepit.Api.World.ElapsedMilliseconds;
+                    if (!lastBoilFxByPos.TryGetValue(firepit.Pos, out double last) || now - last >= 80)
+                    {
+                        lastBoilFxByPos[firepit.Pos] = now;
+                        SpawnBoilEffect(firepit);
+                    }
+                }
+
+                return;
+            }
+
+            // SERVER: gameplay only
+            if (temperature <= 500) return;
+
             if (cauldronStack == null) return;
 
             if (!absorbedItems.TryGetValue(firepit.Pos, out var list))
@@ -64,7 +113,7 @@ namespace bloodrites
             bool absorbedAnything = false;
 
             var entities = firepit.Api.World.GetEntitiesAround(
-                firepit.Pos.ToVec3d().Add(0.5, 0, 0.5), 1.5f, 1.0f
+                firepit.Pos.ToVec3d().Add(0.5, 0, 0.5), 1f, 1.0f
             );
 
             foreach (var ent in entities)
@@ -78,7 +127,8 @@ namespace bloodrites
                 firepit.Api.Logger.Notification($"[BloodRites] Cauldron absorbed: {code}");
                 item.Die();
 
-                SpawnBubbleEffect(firepit);
+                PlaySound(firepit.Api.World, SoundBurn, firepit.Pos);
+                SpawnBubbleEffect(firepit); // server-side
             }
 
             if (absorbedAnything)
@@ -88,20 +138,33 @@ namespace bloodrites
                     firepit.MarkDirty(true);
                 }
             }
+
+            // Always evaluate recipes while heated, so the timer can progress
+            if (TryApplyRecipe(firepit, vesselSlot!, list))
+            {
+                firepit.MarkDirty(true);
+            }
         }
 
         // --------------------------------------------------------------------
 
         private static bool TryApplyRecipe(BlockEntityFirepit firepit, ItemSlot vesselSlot, List<string> absorbedList)
         {
+            var api = firepit.Api;
+            double now = api.World.ElapsedMilliseconds;
+
+            // Count absorbed items
             var counts = new Dictionary<string, int>();
             foreach (var c in absorbedList)
             {
                 if (!counts.TryAdd(c, 1)) counts[c]++;
             }
 
+            AlchemyRecipe? matched = null;
+
             foreach (var r in Recipes)
             {
+                // Ingredient check
                 bool ok = true;
                 foreach (var req in r.Ingredients)
                 {
@@ -109,31 +172,75 @@ namespace bloodrites
                 }
                 if (!ok) continue;
 
-                // --- IMPORTANT: clone + replace stack so it syncs ---
-                var oldStack = vesselSlot.Itemstack;
-                if (oldStack == null) return false;
+                // Input liquid check (contents tree slot "0")
+                if (!string.IsNullOrEmpty(r.InputLiquidCode) && r.InputLiquidPortions > 0)
+                {
+                    var stack = vesselSlot.Itemstack;
+                    var contentsTree = stack?.Attributes?["contents"] as ITreeAttribute;
+                    if (contentsTree == null || !contentsTree.HasAttribute("0")) continue;
 
-                var newStack = oldStack.Clone();                 // new instance -> network notices
-                if (!SetContainerContents(firepit.Api, newStack, r.OutputLiquidCode, r.OutputLitres))
-                    return false;
+                    ItemStack inLiquidStack = contentsTree.GetItemstack("0");
+                    if (inLiquidStack == null) continue;
 
-                vesselSlot.Itemstack = newStack;
-                vesselSlot.MarkDirty();
+                    inLiquidStack.ResolveBlockOrItem(api.World);
 
-                // also mark the BE dirty (belt & braces)
-                firepit.MarkDirty(true);
-                firepit.Api.World.BlockAccessor.MarkBlockEntityDirty(firepit.Pos);
+                    string? inCode = inLiquidStack.Collectible?.Code?.ToString();
+                    int inPortions = inLiquidStack.StackSize;
 
-                absorbedList.Clear();
+                    if (inCode != r.InputLiquidCode) continue;
+                    if (inPortions < r.InputLiquidPortions) continue;
+                }
 
-                firepit.Api.Logger.Notification(
-                    $"[BloodRites] Recipe '{r.Code}' -> liquid '{r.OutputLiquidCode}' ({r.OutputLitres}L)"
-                );
-
-                return true;
+                matched = r;
+                break;
             }
 
-            return false;
+            // If no recipe matches right now -> cancel any pending timer
+            if (matched == null)
+            {
+                recipeOkSinceMs.Remove(firepit.Pos);
+                recipeOkCode.Remove(firepit.Pos);
+                return false;
+            }
+
+            // Recipe matches right now -> bubble while "correct"
+            SpawnBubbleEffect(firepit);
+
+            // Start timer if not already started (or if different recipe became correct)
+            if (!recipeOkSinceMs.TryGetValue(firepit.Pos, out double startMs) ||
+                !recipeOkCode.TryGetValue(firepit.Pos, out string code) ||
+                code != matched.Code)
+            {
+                recipeOkSinceMs[firepit.Pos] = now;
+                recipeOkCode[firepit.Pos] = matched.Code;
+                return false;
+            }
+
+            // If 10 seconds have not yet passed, keep bubbling but do not craft
+            if (now - startMs < BubbleDelayMs) return false;
+
+            // 10 seconds passed with recipe continuously correct -> apply output
+            var oldStack = vesselSlot.Itemstack;
+            PlaySound(firepit.Api.World, SoundSuccess, firepit.Pos);
+            if (oldStack == null) return false;
+
+            var newStack = oldStack.Clone();
+            if (!SetContainerContents(api, newStack, matched.OutputLiquidCode, matched.OutputLitres))
+                return false;
+
+            vesselSlot.Itemstack = newStack;
+            vesselSlot.MarkDirty();
+
+            firepit.MarkDirty(true);
+            api.World.BlockAccessor.MarkBlockEntityDirty(firepit.Pos);
+
+            absorbedList.Clear();
+
+            recipeOkSinceMs.Remove(firepit.Pos);
+            recipeOkCode.Remove(firepit.Pos);
+
+            api.Logger.Notification($"[BloodRites] Recipe '{matched.Code}' -> '{matched.OutputLiquidCode}' after 10s");
+            return true;
         }
 
         // --------------------------------------------------------------------
@@ -141,13 +248,15 @@ namespace bloodrites
         // Typical convention: 100 portions = 1 litre. So 3L => 300 portions.
         private static bool SetContainerContents(ICoreAPI api, ItemStack vesselStack, string liquidCode, float litres)
         {
-            vesselStack.Attributes ??= new Vintagestory.API.Datastructures.TreeAttribute();
+            vesselStack.Attributes ??= new TreeAttribute();
 
-            // 1) Resolve liquid collectible (usually an Item: e.g. game:waterportion)
             var loc = new AssetLocation(liquidCode);
 
-            CollectibleObject? coll = api.World.GetItem(loc);
-            coll ??= api.World.GetBlock(loc);
+            CollectibleObject? coll = api.World.GetItem(loc) as CollectibleObject;
+            if (coll == null)
+            {
+                coll = api.World.GetBlock(loc) as CollectibleObject;
+            }
 
             if (coll == null)
             {
@@ -155,25 +264,26 @@ namespace bloodrites
                 return false;
             }
 
-            // 2) Build the stored liquid stack (type only; quantity is stored separately as "quantity")
-            var liquidStack = new ItemStack(coll, 1);
+            int portions = (int)GameMath.Clamp(litres * 100f, 0f, 300f);
+
+            var liquidStack = new ItemStack(coll, portions);
             liquidStack.ResolveBlockOrItem(api.World);
 
-            // 3) IMPORTANT: store "contents" as an ItemstackAttribute (SetItemstack does this)
-            vesselStack.Attributes.SetItemstack("contents", liquidStack);
+            var contentsTree = new TreeAttribute();
+            contentsTree.SetItemstack("0", liquidStack);
 
-            // 4) Buckets use "quantity" as portions (100 portions per litre is a common pattern)
-            int portions = (int)GameMath.Clamp(litres * 100f, 0f, 300f);
+            vesselStack.Attributes["contents"] = contentsTree;
+
+            // optional safety for bucket-style logic
             vesselStack.Attributes.SetInt("quantity", portions);
 
-            // Optional: if you want to debug what’s actually stored
-            api.Logger.Notification($"[BloodRites] Set contents={liquidCode}, quantity={portions}");
-
+            api.Logger.Notification($"[BloodRites] Set contents tree slot0={liquidCode}, portions={portions}");
             return true;
         }
 
         private static void SpawnBubbleEffect(BlockEntityFirepit firepit)
         {
+            //if (firepit?.Api?.Side != EnumAppSide.Client) return;
             var world = firepit.Api.World;
             var basePos = firepit.Pos.ToVec3d().Add(0.35, 0.2, 0.4);
 
@@ -181,7 +291,7 @@ namespace bloodrites
             {
                 MinQuantity = 8,
                 AddQuantity = 6,
-                Color = ColorUtil.ToRgba(180, 200, 50, 60),
+                Color = ColorUtil.ToRgba(140, 140, 140, 60),
                 MinPos = basePos,
                 AddPos = new Vec3d(0.18, 0.08, 0.18),
                 MinVelocity = new Vec3f(0f, 0.12f, 0f),
@@ -190,6 +300,46 @@ namespace bloodrites
                 GravityEffect = 0f,
                 MinSize = 0.1f,
                 MaxSize = 0.32f,
+                ParticleModel = EnumParticleModel.Quad
+            };
+
+            world.SpawnParticles(p);
+        }
+
+        private static readonly Dictionary<BlockPos, double> lastBoilFxByPos = new();
+
+        private static void SpawnBoilEffect(BlockEntityFirepit firepit)
+        {
+            if (firepit?.Api?.Side != EnumAppSide.Client) return;
+            var world = firepit.Api.World;
+            var basePos = firepit.Pos.ToVec3d().Add(0.35, 0.45, 0.35);
+
+            var p = new SimpleParticleProperties()
+            {
+                MinQuantity = 2,
+                AddQuantity = 3,
+                Color = ColorUtil.ToRgba(200, 225, 225, 30),
+
+                // Spread across the cauldron surface
+                MinPos = basePos,
+                AddPos = new Vec3d(0.26, 0.01, 0.26),
+
+                // No rise = “forming in place”
+                MinVelocity = new Vec3f(0f, 0f, 0f),
+                AddVelocity = new Vec3f(0f, 0f, 0f),
+                GravityEffect = 0f,
+
+                // Short life = pop
+                LifeLength = 0.35f,
+
+                // Start small...
+                MinSize = 0.03f,
+                MaxSize = 0.06f,
+
+                // ...then grow and fade quickly (bubble pop)
+                SizeEvolve = new EvolvingNatFloat(EnumTransformFunction.LINEAR, 0.18f),
+                OpacityEvolve = new EvolvingNatFloat(EnumTransformFunction.LINEAR, -255f),
+
                 ParticleModel = EnumParticleModel.Quad
             };
 

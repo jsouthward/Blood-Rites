@@ -10,6 +10,9 @@ namespace bloodrites
     {
         public string Code = "";
         public Dictionary<string, int> Ingredients = new(); // itemcode -> count
+        public string InputLiquidCode = "";     // e.g. "game:waterportion"
+        public int InputLiquidPortions = 0;     // e.g. 300
+        public bool ConsumeInputLiquid = true;  // usually true
         public string OutputLiquidCode = "";                // e.g. "bloodrites:bloodportion"
         public float OutputLitres = 1f;                     // how much it fills to (or adds)
         public string OutputVesselCode { get; set; } = "";         // e.g. "bloodrites:alchemycauldron-blood"

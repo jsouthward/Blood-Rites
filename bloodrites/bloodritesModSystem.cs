@@ -21,7 +21,7 @@ namespace bloodrites
             var harmony = new Harmony("bloodrites.firepitpatch");
             harmony.PatchAll();
             //api.Logger.Notification("[BloodRites] Harmony patch applied to BlockEntityFirepit.OnBurnTick()");
-            
+
             LoadAlchemyRecipes(api);
             api.Logger.Notification("[BloodRites] Loading Alchemy Recipes...");
 
