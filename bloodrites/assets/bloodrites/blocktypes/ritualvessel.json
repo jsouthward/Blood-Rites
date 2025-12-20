@@ -1,19 +1,20 @@
 ﻿{
   "code": "ritualvessel",
-  "class": "BlockBucket",
+  "class": "BlockRitualVessel",
+  "entityClass": "RitualVessel",
 	"behaviors": [
 		{"name": "UnstableFalling"}, 
 		{"name": "RightClickPickup"}, 
 		{"name": "MilkingContainer" } 
 	],
-	"entityClass": "Bucket",
   "shape": { "base": "bloodrites:block/ritualvessel" },
   
   "textures": {
 		"glass": { "base": "game:block/glass/quartz" },
 		"smoky": { "base": "game:block/glass/smoky" },
         "vintage": { "base": "game:block/glass/vintage" },
-        "wood": { "base": "game:block/wood/debarked/aged" }
+        "wood": { "base": "game:block/wood/debarked/aged" },
+        "liquid": { "base": "game:block/liquid/water" }
 	},
   
   "doNotRenderAtLod2": true,
@@ -28,13 +29,14 @@
     "renderpass": "cutout",
 
     "liquidContainerProps": {
-		"capacityLitres": 6,
-		"transferSizeLitres": 1,
-		"emptyShapeLoc": "bloodrites:block/ritualvessel",
-		"opaqueContentShapeLoc": "bloodrites:shapes/block/vesselContents",
-		"liquidContentShapeLoc": "bloodrites:shapes/block/vesselLiquidContents",
-		"liquidMaxYTranslate": 0.30
-	},
+    "capacityLitres": 6,
+    "transferSizeLitres": 1,
+    "emptyShapeLoc": "bloodrites:block/ritualvessel",
+
+    // turn off default liquid rendering
+    "liquidContentShapeLoc": "bloodrites:shapes/block/empty",
+    "liquidMaxYTranslate": 0
+    }
 
     /*"watertightcontainer": {
       "capacityLitres": 3,

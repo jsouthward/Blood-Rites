@@ -22,6 +22,9 @@ namespace bloodrites
             harmony.PatchAll();
             //api.Logger.Notification("[BloodRites] Harmony patch applied to BlockEntityFirepit.OnBurnTick
 
+            api.RegisterBlockClass("BlockRitualVessel", typeof(BlockRitualVessel));
+            api.RegisterBlockEntityClass("RitualVessel", typeof(BlockEntityRitualVessel));
+
         }
 
         public override void StartServerSide(ICoreServerAPI api)
