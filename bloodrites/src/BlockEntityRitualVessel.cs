@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Reflection;
+using System.Collections.Generic;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
@@ -11,14 +12,10 @@ namespace bloodrites
 {
     public class BlockEntityRitualVessel : BlockEntityBucket
     {
+        
         private MeshData? liquidMesh;
         private float lastFillFrac = -1f;
 
-        // liquid full cube shape (kept, but we now load via Shape.TryGet)
-        private static readonly AssetLocation LiquidFullShapeLoc =
-            new AssetLocation("bloodrites", "shapes/block/vesselLiquidFull.json");
-
-        // Match shape's "from" Y (in pixels/16). You said your liquid starts at y=0.5 in JSON.
         private const float LiquidBottomY = 1f / 16f;
 
         public override void Initialize(ICoreAPI api)
@@ -37,7 +34,7 @@ namespace bloodrites
 
             if (Api?.Side == EnumAppSide.Client)
             {
-                RebuildLiquidMesh(force: false);
+                RebuildLiquidMesh(force: true);
             }
         }
 
@@ -48,11 +45,13 @@ namespace bloodrites
 
             float fill = GetFillFractionSafe();
 
-            // While debugging, keep this VERY lenient so it doesn't "stick" and look like nothing is happening
             if (!force && Math.Abs(fill - lastFillFrac) < 0.0001f) return;
             lastFillFrac = fill;
 
-            capi.Logger.Notification("[BloodRites] RitualVessel rebuild @ {0} fill={1:0.###}", Pos, fill);
+            capi.Logger.Notification(
+                "[BloodRites] RitualVessel rebuild @ {0} fill={1:0.###}",
+                Pos, fill
+            );
 
             if (fill <= 0.001f)
             {
@@ -61,73 +60,149 @@ namespace bloodrites
                 return;
             }
 
-            // --- NEW: Shape.TryGet style load ---
+            // --- Load liquid shape ---
             const string shapePath = "bloodrites:shapes/block/vesselLiquidFull.json";
             Shape? shape = Shape.TryGet(capi, shapePath);
             if (shape == null)
             {
-                capi.World.Logger.Warning("[BloodRites] Missing cauldron shape at {0}", shapePath);
+                capi.World.Logger.Warning(
+                    "[BloodRites] Missing liquid shape at {0}",
+                    shapePath
+                );
                 liquidMesh = null;
                 MarkDirty(true);
                 return;
             }
 
-            // Important: use THIS block's texture source so your #... texture refs resolve correctly
+            // --- Resolve correct texture source (same logic as vanilla bucket) ---
             var block = Api.World.BlockAccessor.GetBlock(Pos);
-            ITexPositionSource texSource = capi.Tesselator.GetTextureSource(block);
+            ItemStack? contentStack = TryGetContentStack();
 
-            capi.Tesselator.TesselateShape("ritualvessel-liquid", shape, out MeshData mesh, texSource);
+            ITexPositionSource texSource;
+            if (contentStack != null)
+            {
+                texSource = GetLiquidTextureSource(capi, contentStack, block);
+            }
+            else
+            {
+                texSource = capi.Tesselator.GetTextureSource(block);
+            }
 
-            // Scale around the bottom so it grows upward (NOT translate up/down)
-            mesh.Scale(new Vec3f(0.5f, LiquidBottomY, 0.5f), 1f, fill, 1f);
+            capi.Tesselator.TesselateShape(
+                "ritualvessel-liquid",
+                shape,
+                out MeshData mesh,
+                texSource
+            );
+
+            // Scale upward from liquid bottom
+            mesh.Scale(
+                new Vec3f(0.5f, LiquidBottomY, 0.5f),
+                1f,
+                fill,
+                1f
+            );
 
             liquidMesh = mesh;
 
-            capi.Logger.Notification("[BloodRites] RitualVessel liquid mesh verts={0}", liquidMesh.VerticesCount);
+            capi.Logger.Notification(
+                "[BloodRites] RitualVessel liquid mesh verts={0}",
+                liquidMesh.VerticesCount
+            );
 
             MarkDirty(true);
         }
 
+        // --------------------------------------------------------
+        // Vanilla bucket-style texture resolution (1.21 compatible)
+        // --------------------------------------------------------
+        private ITexPositionSource GetLiquidTextureSource(
+    ICoreClientAPI capi,
+    ItemStack contentStack,
+    Block block
+)
+        {
+            JsonObject wtProps =
+                contentStack.Collectible.Attributes?["waterTightContainerProps"] ?? default;
+
+            if (wtProps.Exists)
+            {
+                JsonObject texObj = wtProps["texture"];
+                if (texObj.Exists)
+                {
+                    var srcTextures = texObj.AsObject<Dictionary<string, AssetLocation>>(
+                        new Dictionary<string, AssetLocation>(),
+                        contentStack.Collectible.Code.Domain
+                    );
+
+                    // 🔑 FORCE a "liquid" key (this is what your shape expects)
+                    var finalTextures = new Dictionary<string, AssetLocation>();
+
+                    // If the liquid already defines "liquid", use it
+                    if (srcTextures.TryGetValue("liquid", out var liquidTex))
+                    {
+                        finalTextures["liquid"] = liquidTex;
+                    }
+                    else
+                    {
+                        // Otherwise take the FIRST texture entry and map it to "liquid"
+                        foreach (var kvp in srcTextures)
+                        {
+                            finalTextures["liquid"] = kvp.Value;
+                            break;
+                        }
+                    }
+
+                    return new ContainedTextureSource(
+                        capi,
+                        capi.BlockTextureAtlas,
+                        finalTextures,
+                        contentStack.Collectible.Code.ToString()
+                    );
+                }
+            }
+
+            // Fallback (should never happen unless liquid is malformed)
+            return capi.Tesselator.GetTextureSource(block);
+        }
+
+        // --------------------------------------------------------
+
         public float GetFillFractionSafe()
         {
-            float cap = Block?.Attributes?["liquidContainerProps"]?["capacityLitres"]?.AsFloat(0) ?? 0;
+            float cap =
+                Block?.Attributes?["liquidContainerProps"]?["capacityLitres"]?.AsFloat(0)
+                ?? 0;
+
             if (cap <= 0.0001f) return 0f;
 
             ItemStack? stack = TryGetContentStack();
             if (stack == null) return 0f;
 
-            // 100 portions per litre (your log: 300 portions = 3L)
+            // 100 portions per litre
             float litres = stack.StackSize / 100f;
 
             float frac = litres / cap;
-            if (frac < 0f) frac = 0f;
-            if (frac > 1f) frac = 1f;
-            return frac;
+            return GameMath.Clamp(frac, 0f, 1f);
         }
 
         private ItemStack? TryGetContentStack()
         {
-            // Try the common patterns first
             try
             {
-                // BlockEntityBucket often has inventory slot 0 as contents
                 var inv = GetInventoryViaReflection();
                 if (inv != null && inv.Count > 0)
                 {
                     return inv[0].Itemstack;
                 }
             }
-            catch
-            {
-                // swallow; fallback below
-            }
+            catch { }
 
             return null;
         }
 
         private InventoryBase? GetInventoryViaReflection()
         {
-            // Look on this type and base types for fields/properties like inventory/inv/Inventory
             object? invObj =
                 GetMember(this, "inventory") ??
                 GetMember(this, "inv") ??
@@ -140,17 +215,15 @@ namespace bloodrites
         {
             var t = obj.GetType();
 
-            // field
             var f = t.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (f != null) return f.GetValue(obj);
 
-            // property
             var p = t.GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (p != null) return p.GetValue(obj);
 
             return null;
         }
-
+        
         public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tesselator)
         {
             bool ok = base.OnTesselation(mesher, tesselator);
@@ -162,5 +235,6 @@ namespace bloodrites
 
             return ok;
         }
+
     }
 }

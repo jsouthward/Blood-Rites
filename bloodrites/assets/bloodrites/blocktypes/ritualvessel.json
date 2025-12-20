@@ -38,17 +38,13 @@
     "liquidMaxYTranslate": 0
     }
 
-    /*"watertightcontainer": {
-      "capacityLitres": 3,
-      "allowPickup": true
-    }*/
   },
 
   "sounds": {
-    "place": "game:block/glass",
+    "place": "game:block/ingot",
     "break": "game:block/glass",
-    "hit": "game:block/glass",
-    "walk": "game:walk/glass"
+    "hit": "game:block/ingot",
+    "walk": "game:walk/ingot"
   },
   "lightAbsorption": 0,
   "liquidSelectable": 1,

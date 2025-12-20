@@ -18,7 +18,7 @@ namespace bloodrites
             new AssetLocation("bloodrites", "shapes/block/vesselLiquidFull");
 
         // must match vesselLiquidFull.json bottom (1 voxel)
-        private const float yBottom = 0.5f / 16f;
+        private const float yBottom = 1f / 16f;
 
         // IMPORTANT: this is the older signature your build is using
         public override void OnJsonTesselation(ref MeshData mesh, ref int[] chunkExtBlocks, BlockPos pos, Block[] chunkExt, int chunkExtBlocksLen)
